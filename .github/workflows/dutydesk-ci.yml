@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   moodle-plugin-ci:
-    name: Moodle ${{ matrix.moodle }} / PHP ${{ matrix.php }}
+    name: Moodle ${{ matrix.moodle }} / PHP ${{ matrix.php }} / ${{ matrix.db }}
     runs-on: ubuntu-22.04
 
     strategy:
@@ -24,9 +24,27 @@ jobs:
           - moodle: MOODLE_401_STABLE
             php: '8.1'
             node: '16'
+            db: mysqli
+            dbuser: root
+            dbpass: ''
           - moodle: MOODLE_405_STABLE
             php: '8.3'
             node: '22'
+            db: mysqli
+            dbuser: root
+            dbpass: ''
+          - moodle: MOODLE_401_STABLE
+            php: '8.1'
+            node: '16'
+            db: pgsql
+            dbuser: moodle
+            dbpass: moodle
+          - moodle: MOODLE_405_STABLE
+            php: '8.3'
+            node: '22'
+            db: pgsql
+            dbuser: moodle
+            dbpass: moodle
 
     services:
       mysql:
@@ -41,13 +59,26 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: moodle
+          POSTGRES_PASSWORD: moodle
+          POSTGRES_DB: moodle
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U moodle"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     env:
-      DB: mysqli
+      DB: ${{ matrix.db }}
       DB_HOST: 127.0.0.1
       DB_NAME: moodle
-      DB_USER: root
-      DB_PASS: ''
+      DB_USER: ${{ matrix.dbuser }}
+      DB_PASS: ${{ matrix.dbpass }}
       MOODLE_BRANCH: ${{ matrix.moodle }}
       MOODLE_DIR: ${{ github.workspace }}/moodle-ci
       PLUGIN_DIR: ${{ github.workspace }}
@@ -69,7 +100,7 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: >
             ctype, curl, dom, exif, fileinfo, gd, hash, iconv, intl, json,
-            mbstring, mysqli, openssl, pcre, simplexml, soap, sodium, spl,
+            mbstring, mysqli, pgsql, openssl, pcre, simplexml, soap, sodium, spl,
             tokenizer, xml, xmlreader, zip, zlib
           coverage: none
           tools: composer:v2
