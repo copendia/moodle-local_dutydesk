@@ -2,12 +2,7 @@ name: DutyDesk CI
 
 on:
   pull_request:
-    branches:
-      - main
   push:
-    branches:
-      - main
-      - marketplace-readiness
 
 concurrency:
   group: dutydesk-ci-${{ github.ref }}
