@@ -1,0 +1,116 @@
+name: DutyDesk CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: dutydesk-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  moodle-plugin-ci:
+    name: Moodle ${{ matrix.moodle }} / PHP ${{ matrix.php }}
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - moodle: MOODLE_401_STABLE
+            php: '8.1'
+            node: '16'
+          - moodle: MOODLE_405_STABLE
+            php: '8.3'
+            node: '22'
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: moodle
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DB: mysqli
+      DB_HOST: 127.0.0.1
+      DB_NAME: moodle
+      DB_USER: root
+      DB_PASS: ''
+      MOODLE_BRANCH: ${{ matrix.moodle }}
+      MOODLE_DIR: ${{ github.workspace }}/moodle-ci
+      PLUGIN_DIR: ${{ github.workspace }}
+      INSTALLED_PLUGIN_DIR: ${{ github.workspace }}/moodle-ci/local/dutydesk
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install OS dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y locales
+          sudo locale-gen en_AU.UTF-8
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: >
+            ctype, curl, dom, exif, fileinfo, gd, hash, iconv, intl, json,
+            mbstring, mysqli, openssl, pcre, simplexml, soap, sodium, spl,
+            tokenizer, xml, xmlreader, zip, zlib
+          coverage: none
+          tools: composer:v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install Moodle Plugin CI
+        run: composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
+
+      - name: Install Moodle test site
+        run: >
+          ci/bin/moodle-plugin-ci install
+          --moodle="$MOODLE_DIR"
+          --plugin="$PLUGIN_DIR"
+          --db-type="$DB"
+          --db-host="$DB_HOST"
+          --db-name="$DB_NAME"
+          --db-user="$DB_USER"
+          --db-pass="$DB_PASS"
+          --branch="$MOODLE_BRANCH"
+
+      - name: PHP lint
+        run: ci/bin/moodle-plugin-ci phplint "$INSTALLED_PLUGIN_DIR"
+
+      - name: Plugin validation
+        run: ci/bin/moodle-plugin-ci validate "$INSTALLED_PLUGIN_DIR"
+
+      - name: Upgrade savepoints
+        run: ci/bin/moodle-plugin-ci savepoints "$INSTALLED_PLUGIN_DIR"
+
+      - name: Moodle codechecker
+        run: ci/bin/moodle-plugin-ci codechecker "$INSTALLED_PLUGIN_DIR"
+
+      - name: Mustache lint
+        run: ci/bin/moodle-plugin-ci mustache "$INSTALLED_PLUGIN_DIR"
+
+      - name: AMD lint and build check
+        run: ci/bin/moodle-plugin-ci grunt --moodle="$MOODLE_DIR" --tasks=amd "$INSTALLED_PLUGIN_DIR"
+
+      - name: PHPUnit
+        run: ci/bin/moodle-plugin-ci phpunit --moodle="$MOODLE_DIR" "$INSTALLED_PLUGIN_DIR"

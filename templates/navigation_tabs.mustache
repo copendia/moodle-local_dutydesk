@@ -1,0 +1,43 @@
+{{!
+    @template local_dutydesk/navigation_tabs
+
+    Navigation tabs for DutyDesk pages.
+
+    Example context (json):
+    {
+        "isassignedpositions": true,
+        "showdepartments": true,
+        "isdepartments": false,
+        "ispositions": false,
+        "showpositionsarchived": true,
+        "ispositionsarchived": false,
+        "istasks": false
+    }
+}}
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item">
+    <a class="nav-link {{#isassignedpositions}}active{{/isassignedpositions}}" href="index.php">{{#str}}assignedpositions, local_dutydesk{{/str}}</a>
+  </li>
+  {{#showdepartments}}
+    <li class="nav-item">
+      <a class="nav-link {{#isdepartments}}active{{/isdepartments}}" href="departments.php">{{#str}}departments, local_dutydesk{{/str}}</a>
+    </li>
+  {{/showdepartments}}
+  <li class="nav-item">
+    <a class="nav-link {{#ispositions}}active{{/ispositions}}" href="positions.php">{{#str}}positions, local_dutydesk{{/str}}</a>
+  </li>
+  {{#showpositionsarchived}}
+    <li class="nav-item">
+      <a class="nav-link {{#ispositionsarchived}}active{{/ispositionsarchived}}" href="positions.php?view=archived">{{#str}}positions_archived, local_dutydesk{{/str}}</a>
+    </li>
+  {{/showpositionsarchived}}
+  <li class="nav-item">
+    <a class="nav-link {{#istasks}}active{{/istasks}}" href="tasks.php">{{#str}}tasks, local_dutydesk{{/str}}</a>
+  </li>
+</ul>
+
+<div class="modal fade" id="assignModal" tabindex="-1" aria-label="{{#str}}assignuser, local_dutydesk{{/str}}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content"><!-- AJAX content here --></div>
+  </div>
+</div>

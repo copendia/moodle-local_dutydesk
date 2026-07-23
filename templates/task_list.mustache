@@ -1,0 +1,351 @@
+{{!
+    @template local_dutydesk/task_list
+
+    Template for listing tasks with optional subtasks accordion.
+
+    Example context (json):
+    {
+        "displaysearch": false,
+        "tasks": [],
+        "hastasks": false,
+        "notasks": "No tasks available."
+    }
+}}
+{{#displaysearch}}
+    <form
+        class="local-dutydesk-task-search mb-4"
+        method="get"
+        action="{{searchaction}}"
+        data-region="task-search-form"
+        data-behavior="server"
+    >
+        <div class="row g-3 align-items-end">
+            {{#cansearch}}
+                <div class="col-12 col-lg-6">
+                    <label class="form-label" for="local-dutydesk-task-search">{{#str}}searchtasks, local_dutydesk{{/str}}</label>
+                    <input
+                        type="search"
+                        class="form-control"
+                        id="local-dutydesk-task-search"
+                        name="search"
+                        value="{{searchvalue}}"
+                        placeholder="{{searchplaceholder}}"
+                        data-region="task-search-input"
+                        autocomplete="off"
+                    >
+                </div>
+            {{/cansearch}}
+            {{#categoryfilter}}
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label class="form-label" for="local-dutydesk-task-category">{{label}}</label>
+                    <div class="dropdown">
+                        <button
+                            id="local-dutydesk-task-category"
+                            type="button"
+                            class="btn btn-outline-secondary dropdown-toggle text-left local-dutydesk-filter-toggle"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                        >
+                            <span data-active-item-text>
+                                {{#options}}{{#selected}}{{label}}{{/selected}}{{/options}}
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu local-dutydesk-filter-menu" role="menu" data-show-active-item data-skip-active-class="true" data-active-item-text aria-labelledby="local-dutydesk-task-category">
+                            {{#options}}
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-action="task-filter-option"
+                                        data-filter-name="category"
+                                        data-filter-value="{{value}}"
+                                        role="menuitem"
+                                        {{#selected}}aria-current="true"{{/selected}}
+                                    >
+                                        {{label}}
+                                    </a>
+                                </li>
+                            {{/options}}
+                        </ul>
+                    </div>
+                    <input type="hidden" name="category" value="{{#options}}{{#selected}}{{value}}{{/selected}}{{/options}}">
+                </div>
+            {{/categoryfilter}}
+            {{#departmentfilter}}
+                <div class="col-12 col-md-6 col-lg-3">
+                    <label class="form-label" for="local-dutydesk-task-department">{{label}}</label>
+                    <div class="dropdown">
+                        <button
+                            id="local-dutydesk-task-department"
+                            type="button"
+                            class="btn btn-outline-secondary dropdown-toggle text-left local-dutydesk-filter-toggle"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                        >
+                            <span data-active-item-text>
+                                {{#options}}{{#selected}}{{label}}{{/selected}}{{/options}}
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu local-dutydesk-filter-menu" role="menu" data-show-active-item data-skip-active-class="true" data-active-item-text aria-labelledby="local-dutydesk-task-department">
+                            {{#options}}
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="#"
+                                        data-action="task-filter-option"
+                                        data-filter-name="departmentid"
+                                        data-filter-value="{{value}}"
+                                        role="menuitem"
+                                        {{#selected}}aria-current="true"{{/selected}}
+                                    >
+                                        {{label}}
+                                    </a>
+                                </li>
+                            {{/options}}
+                        </ul>
+                    </div>
+                    <input type="hidden" name="departmentid" value="{{#options}}{{#selected}}{{value}}{{/selected}}{{/options}}">
+                </div>
+            {{/departmentfilter}}
+        </div>
+        {{#vacantfilter}}
+            <div class="row mt-2">
+                <div class="col-12">
+                    <div class="form-check">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="local-dutydesk-task-vacantonly"
+                            name="{{name}}"
+                            value="1"
+                            {{#checked}}checked{{/checked}}
+                        >
+                        <label class="form-check-label" for="local-dutydesk-task-vacantonly">{{label}}</label>
+                    </div>
+                </div>
+            </div>
+        {{/vacantfilter}}
+        {{#searchhiddenparams}}
+            <input type="hidden" name="{{name}}" value="{{value}}">
+        {{/searchhiddenparams}}
+    </form>
+    {{#cansearch}}
+        <div class="alert alert-info d-none local-dutydesk-task-noresults" data-region="task-search-empty">
+            {{#str}}nosearchresults, local_dutydesk{{/str}}
+        </div>
+    {{/cansearch}}
+{{/displaysearch}}
+<div class="local-dutydesk-task-list" data-sesskey="{{sesskey}}" data-history-endpoint="{{historyendpoint}}">
+    {{#tasks}}
+        <div class="card mb-3" data-task-id="{{id}}" id="task-{{id}}" data-region="task-card" data-search="{{searchtext}}">
+            <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3">
+                <div class="local-dutydesk-task-heading">
+                    <h5 class="mb-1">
+                        {{title}}
+                        {{#isvacanttask}}
+                            <span class="badge bg-warning text-dark ms-2">{{vacanttasklabel}}</span>
+                        {{/isvacanttask}}
+                        {{#istopicarea}}
+                            <span class="badge local-dutydesk-topicarea-badge ms-2">{{positiontypelabel}}</span>
+                        {{/istopicarea}}
+                    </h5>
+                    <!--div class="text-muted small">{{timestamp}}</div-->
+                    <div class="local-dutydesk-position-meta-table-wrap mt-3">
+                        <table class="local-dutydesk-position-meta-table" role="presentation">
+                            <tbody>
+                                {{^istopicarea}}
+                                    <tr>
+                                        <td class="local-dutydesk-position-meta-label text-muted small pr-2">{{#str}}positionprimaryuser, local_dutydesk{{/str}}</td>
+                                        <td class="local-dutydesk-position-meta-value small">{{{assigneduser}}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="local-dutydesk-position-meta-label text-muted small pr-2">{{#str}}positiondeputyuser, local_dutydesk{{/str}}</td>
+                                        <td class="local-dutydesk-position-meta-value small">{{{deputyuser}}}</td>
+                                    </tr>
+                                {{/istopicarea}}
+                                <tr>
+                                    <td class="local-dutydesk-position-meta-label text-muted small pr-2">{{#str}}department, local_dutydesk{{/str}}</td>
+                                    <td class="local-dutydesk-position-meta-value small">{{{departmentdisplay}}}</td>
+                                </tr>
+                                <!--tr>
+                                    <td class="local-dutydesk-position-meta-label text-muted small pr-2">{{#str}}position, local_dutydesk{{/str}}</td>
+                                    <td class="local-dutydesk-position-meta-value">{{{assignedpositiondisplay}}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="local-dutydesk-position-meta-label text-muted small pr-2">{{#str}}department, local_dutydesk{{/str}}</td>
+                                    <td class="local-dutydesk-position-meta-value small">{{{departmentdisplay}}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="local-dutydesk-position-meta-label">{{#str}}taskworkloadpercent, local_dutydesk{{/str}}</td>
+                                    <td class="local-dutydesk-position-meta-value small">{{workloaddisplay}}</td>
+                                </tr-->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="local-dutydesk-task-actions d-flex flex-wrap gap-2 align-items-center justify-content-end">
+                    {{#positionurl}}
+                        <a
+                            class="btn btn-outline-secondary btn-sm local-dutydesk-task-back"
+                            href="{{positionurl}}"
+                        >
+                            {{#str}}taskbacktoposition, local_dutydesk{{/str}}
+                        </a>
+                    {{/positionurl}}
+                    {{#showactions}}
+                        <div class="btn-group btn-group-sm mt-2 mt-md-0" role="group" aria-label="Task actions">
+                            {{#canedit}}
+                                <a
+                                    class="btn btn-outline-secondary"
+                                    href="{{editurl}}"
+                                    data-action="edit-task"
+                                    data-modal-url="{{editmodalurl}}"
+                                    data-modal-title="{{title}}"
+                                >
+                                    {{#str}}edit{{/str}}
+                                </a>
+                            {{/canedit}}
+                            {{#canviewhistory}}
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-primary"
+                                    data-action="view-task-history"
+                                    data-task-id="{{id}}"
+                                >
+                                    {{#str}}taskhistorybutton, local_dutydesk{{/str}}
+                                </button>
+                            {{/canviewhistory}}
+                            {{#candelete}}
+                                <form method="post" action="{{deleteurl}}" class="d-inline" onsubmit="return confirm('{{#str}}confirmdelete, local_dutydesk{{/str}}');">
+                                    <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                    <button type="submit" class="btn btn-outline-danger">{{#str}}delete{{/str}}</button>
+                                </form>
+                            {{/candelete}}
+                        </div>
+                    {{/showactions}}
+                </div>
+            </div>
+            <div class="card-body">
+                {{#description}}
+                    <div class="mb-3 local-dutydesk-description">
+                        {{{description}}}
+                    </div>
+                {{/description}}
+                {{^description}}
+                    <div class="text-muted small mb-3">{{#str}}nodescription, local_dutydesk{{/str}}</div>
+                {{/description}}
+                {{#hasdocuments}}
+                    <div class="local-dutydesk-task-documents mt-3">
+                        <h6 class="local-dutydesk-task-documents-title">
+                            {{#str}}taskdocuments, local_dutydesk{{/str}}
+                        </h6>
+                        <ul class="list-unstyled mb-0">
+                            {{#documents}}
+                                <li class="local-dutydesk-task-document" data-mimetype="{{mimetype}}">
+                                    <a href="{{url}}">
+                                        <span class="local-dutydesk-task-document-name">{{name}}</span>
+                                        <span class="local-dutydesk-task-document-size text-muted">({{size}})</span>
+                                    </a>
+                                </li>
+                            {{/documents}}
+                        </ul>
+                    </div>
+                {{/hasdocuments}}
+                <div class="local-dutydesk-subtasks" data-region="subtasks">
+                    {{#hassubtasks}}
+                        <!--div class="local-dutydesk-subtasks-header">
+                            <h6 class="mb-0">
+                                {{#str}}subtasks, local_dutydesk{{/str}} ({{subtaskcount}})
+                            </h6>
+                        </-div-->
+                        <div class="local-dutydesk-subtasks-list" id="subtasks-list-{{id}}">
+                            {{#subtasks}}
+                                <section class="local-dutydesk-subtask" data-subtask-id="{{id}}">
+                                    <div class="local-dutydesk-subtask-header">
+                                        <button
+                                            class="local-dutydesk-subtask-toggle collapsed"
+                                            type="button"
+                                            data-target="subtask-panel-{{id}}"
+                                            aria-expanded="false"
+                                            aria-controls="subtask-panel-{{id}}"
+                                        >
+                                            <span class="local-dutydesk-subtask-toggle-icon" aria-hidden="true"></span>
+                                            <span class="local-dutydesk-subtask-title">{{title}}</span>
+                                        </button>
+                                        {{#canedit}}
+                                            <a
+                                                class="btn btn-outline-secondary btn-sm local-dutydesk-subtask-edit"
+                                                href="{{editurl}}"
+                                                data-action="edit-subtask"
+                                                data-modal-url="{{editmodalurl}}"
+                                                data-modal-title="{{title}}"
+                                            >
+                                                {{#str}}edit{{/str}}
+                                            </a>
+                                        {{/canedit}}
+                                    </div>
+                                    <div id="subtask-panel-{{id}}" class="local-dutydesk-subtask-panel" hidden>
+                                        {{#description}}
+                                            <div class="local-dutydesk-subtask-description">
+                                                {{{description}}}
+                                            </div>
+                                        {{/description}}
+                                        {{^description}}
+                                            <div class="text-muted small">
+                                                {{#str}}nosubtaskdescription, local_dutydesk{{/str}}
+                                            </div>
+                                        {{/description}}
+                                        {{#hasdocuments}}
+                                            <div class="local-dutydesk-subtask-documents mt-3">
+                                                <h6 class="local-dutydesk-subtask-documents-title">
+                                                    {{#str}}subtaskdocuments, local_dutydesk{{/str}}
+                                                </h6>
+                                                <ul class="list-unstyled mb-0">
+                                                    {{#documents}}
+                                                        <li class="local-dutydesk-subtask-document" data-mimetype="{{mimetype}}">
+                                                            <a href="{{url}}">
+                                                                <span class="local-dutydesk-subtask-document-name">{{name}}</span>
+                                                                <span class="local-dutydesk-subtask-document-size text-muted">({{size}})</span>
+                                                            </a>
+                                                        </li>
+                                                    {{/documents}}
+                                                </ul>
+                                            </div>
+                                        {{/hasdocuments}}
+                                    </div>
+                                </section>
+                            {{/subtasks}}
+                        </div>
+                    {{/hassubtasks}}
+                    {{^hassubtasks}}
+                        <div class="text-muted small">{{#str}}nosubtasks, local_dutydesk{{/str}}</div>
+                    {{/hassubtasks}}
+                </div>
+            </div>
+            <div class="card-footer bg-white">
+                <div class="d-flex gap-2 flex-wrap">
+                    {{#cancreatesubtask}}
+                        <a
+                            class="btn btn-secondary"
+                            href="{{newsubtaskurl}}"
+                            data-action="new-subtask"
+                            data-modal-url="{{newsubtaskmodalurl}}"
+                            data-modal-title="{{#str}}newsubtask, local_dutydesk{{/str}}"
+                        >
+                            {{#str}}newsubtask, local_dutydesk{{/str}}
+                        </a>
+                    {{/cancreatesubtask}}
+                    {{#cansortsubtasks}}
+                        <a class="btn btn-outline-secondary" href="{{sortsubtasksurl}}">{{#str}}reordersubtasks, local_dutydesk{{/str}}</a>
+                    {{/cansortsubtasks}}
+                </div>
+            </div>
+        </div>
+        <div class="local-dutydesk-list-divider" aria-hidden="true"></div>
+    {{/tasks}}
+    {{^tasks}}
+        <div class="alert alert-info">{{#str}}notasks, local_dutydesk{{/str}}</div>
+    {{/tasks}}
+</div>

@@ -1,0 +1,10 @@
+{
+  "name": "local_dutydesk",
+  "version": "1.0.0",
+  "description": "Moodle local plugin for department and task management",
+  "author": "Dein Name",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "moodle-plugin-grunt": "^1.0.0"
+  }
+}

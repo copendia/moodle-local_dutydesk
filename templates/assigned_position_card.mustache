@@ -1,0 +1,104 @@
+{{!
+    @template local_dutydesk/assigned_position_card
+
+    Position card used on the department dashboard.
+
+    Example context (json):
+    {
+        "id": 1,
+        "tileclass": "local-dutydesk-position-tile--0",
+        "title": "Example position",
+        "titledisplay": "Example position",
+        "hasroles": true,
+        "roles": [{"label": "Responsible"}],
+        "istopicarea": false,
+        "isvacant": false,
+        "departmentdisplay": "Example department",
+        "hastopicdescription": false,
+        "primaryuser": "Example User",
+        "deputyuser": "Deputy User",
+        "workloadgaugetone": "ok",
+        "workloadgaugevalue": 50,
+        "workloadtotaldisplay": "50%",
+        "canmarkvacant": false
+    }
+}}
+<article class="local-dutydesk-position-tile card {{tileclass}}" id="assigned-position-{{id}}">
+    <div class="local-dutydesk-position-tile-media" aria-hidden="true">
+        <span class="visually-hidden">{{title}}</span>
+    </div>
+    <div class="local-dutydesk-position-tile-body card-body">
+        {{#hasroles}}
+            <div class="local-dutydesk-position-tile-badges">
+                {{#roles}}
+                    <span class="badge bg-light text-dark">{{label}}</span>
+                {{/roles}}
+            </div>
+        {{/hasroles}}
+        <h4 class="local-dutydesk-position-tile-title">{{{titledisplay}}}</h4>
+        {{#istopicarea}}
+            <div class="mb-2">
+                <span class="badge local-dutydesk-topicarea-badge">{{positiontypelabel}}</span>
+            </div>
+        {{/istopicarea}}
+        {{#isvacant}}
+            <div class="mb-2">
+                <span class="badge bg-warning text-dark">{{#str}}positionvacantbadge, local_dutydesk{{/str}}</span>
+            </div>
+        {{/isvacant}}
+        <div class="local-dutydesk-position-tile-department text-muted small">
+            {{{departmentdisplay}}}
+        </div>
+        {{#hastopicdescription}}
+            <div class="local-dutydesk-position-tile-topic-description">{{topicdescription}}</div>
+        {{/hastopicdescription}}
+        <dl class="local-dutydesk-position-tile-people">
+            {{^istopicarea}}
+                <div class="local-dutydesk-position-tile-person">
+                    <dt>{{#str}}positionprimaryuser, local_dutydesk{{/str}}</dt>
+                    <dd>{{{primaryuser}}}</dd>
+                </div>
+                <div class="local-dutydesk-position-tile-person">
+                    <dt>{{#str}}positiondeputyuser, local_dutydesk{{/str}}</dt>
+                    <dd>{{{deputyuser}}}</dd>
+                </div>
+            {{/istopicarea}}
+            {{^istopicarea}}
+                <div class="local-dutydesk-position-tile-person">
+                    <dt>{{#str}}positionworkloadtotal, local_dutydesk{{/str}}</dt>
+                    <dd>
+                        <div
+                            class="local-dutydesk-workload-gauge local-dutydesk-workload-gauge--{{workloadgaugetone}}"
+                            style="--gauge-value: {{workloadgaugevalue}};"
+                            title="{{workloadtotaldisplay}}"
+                        >
+                            <span class="local-dutydesk-workload-gauge-value">{{workloadtotaldisplay}}</span>
+                        </div>
+                    </dd>
+                </div>
+            {{/istopicarea}}
+        </dl>
+        {{#canmarkvacant}}
+            <form method="post" action="{{vacanttoggleurl}}" class="mt-2">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <input type="hidden" name="togglevacantid" value="{{id}}">
+                <input type="hidden" name="vacant" value="0">
+                <div class="form-check">
+                    <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="position-vacant-{{id}}"
+                        name="vacant"
+                        value="1"
+                        {{#isvacant}}checked{{/isvacant}}
+                        onchange="this.form.submit();"
+                    >
+                    <label class="form-check-label" for="position-vacant-{{id}}">
+                        {{vacantlabel}}
+                    </label>
+                </div>
+                <div class="text-muted small mt-1">{{vacanthelp}}</div>
+            </form>
+        {{/canmarkvacant}}
+    </div>
+</article>

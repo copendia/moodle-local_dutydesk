@@ -1,0 +1,160 @@
+<?xml version="1.0" ?>
+<XMLDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" PATH="local/dutydesk/db" VERSION="20250903053" COMMENT="DutyDesk install.xml mit Kommentaren" xsi:noNamespaceSchemaLocation="../../lib/xmldb/xmldb.xsd">
+    <TABLES>
+        <TABLE NAME="dutydesk_department" COMMENT="Dezernate und Organisationseinheiten">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
+                <FIELD NAME="name" TYPE="char" NOTNULL="true" LENGTH="255"/>
+                <FIELD NAME="description" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="timestamp" TYPE="int" NOTNULL="true" LENGTH="10"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="dutydesk_department_manager" COMMENT="Verknüpfung zwischen Dezernaten und deren Leitungen">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
+                <FIELD NAME="departmentid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="userid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="assignedby" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="timecreated" TYPE="int" NOTNULL="true" LENGTH="10"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="deptuseruniq" TYPE="unique" FIELDS="departmentid, userid"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="dutydesk_position" COMMENT="Stellen im Dienstplan">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
+                <FIELD NAME="title" TYPE="char" NOTNULL="true" LENGTH="255"/>
+                <FIELD NAME="positiontype" TYPE="char" NOTNULL="true" LENGTH="20" DEFAULT="position"/>
+                <FIELD NAME="departmentid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="description" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="primaryuserid" TYPE="int" NOTNULL="false" LENGTH="10"/>
+                <FIELD NAME="archived" TYPE="int" NOTNULL="false" LENGTH="1"/>
+                <FIELD NAME="archivedtime" TYPE="int" NOTNULL="false" LENGTH="10"/>
+                <FIELD NAME="isvacant" TYPE="int" NOTNULL="true" LENGTH="1" DEFAULT="0"/>
+                <FIELD NAME="timestamp" TYPE="int" NOTNULL="true" LENGTH="10"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="dutydesk_userinfo" COMMENT="Erweiterungstabelle für Benutzerinformationen">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="departmentid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="positionid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="dutydeskrole" TYPE="char" NOTNULL="false" LENGTH="100"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="dutydesk_task" COMMENT="Aufgaben, die Stellen zugewiesen sind">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
+                <FIELD NAME="title" TYPE="char" NOTNULL="true" LENGTH="255"/>
+                <FIELD NAME="description" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="descriptionformat" TYPE="int" NOTNULL="true" LENGTH="2" DEFAULT="1"/>
+                <FIELD NAME="categoryid" TYPE="int" NOTNULL="false" LENGTH="10"/>
+                <FIELD NAME="weight" TYPE="int" NOTNULL="false" LENGTH="3"/>
+                <FIELD NAME="active" TYPE="int" NOTNULL="true" LENGTH="1" DEFAULT="0"/>
+                <FIELD NAME="timestamp" TYPE="int" NOTNULL="true" LENGTH="10"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="dutydesk_subtask" COMMENT="Unteraufgaben zu Aufgaben">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
+                <FIELD NAME="taskid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="title" TYPE="char" NOTNULL="true" LENGTH="255"/>
+                <FIELD NAME="description" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="descriptionformat" TYPE="int" NOTNULL="true" DEFAULT="1" LENGTH="2"/>
+                <FIELD NAME="sortorder" TYPE="int" NOTNULL="false" LENGTH="10"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="dutydesk_taskassignment" COMMENT="Primäre Aufgaben-Zuweisungen zu Positionen">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
+                <FIELD NAME="taskid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="positionid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="workloadpercent" TYPE="int" NOTNULL="false" LENGTH="3"/>
+                <FIELD NAME="assignedby" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="timestamp" TYPE="int" NOTNULL="true" LENGTH="10"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="dutydesk_position_deputy" COMMENT="Vertretungsregelungen für Stellen">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
+                <FIELD NAME="positionid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="userid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="assignedby" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="timecreated" TYPE="int" NOTNULL="true" LENGTH="10" DEFAULT="0"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="uniqposition" TYPE="unique" FIELDS="positionid"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="dutydesk_category" COMMENT="Aufgabenkategorien">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
+                <FIELD NAME="name" TYPE="char" NOTNULL="true" LENGTH="255"/>
+                <FIELD NAME="departmentid" TYPE="int" NOTNULL="false" LENGTH="10"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="dutydesk_comment" COMMENT="Kommentare zu Aufgaben/Schulungen">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
+                <FIELD NAME="userid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="content" TYPE="text" NOTNULL="true"/>
+                <FIELD NAME="created" TYPE="int" NOTNULL="true" LENGTH="10"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="dutydesk_import" COMMENT="Importdateien zur Initialbefüllung">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
+                <FIELD NAME="filename" TYPE="char" NOTNULL="true" LENGTH="255"/>
+                <FIELD NAME="importedby" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="created" TYPE="int" NOTNULL="true" LENGTH="10"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="dutydesk_task_history" COMMENT="Historie von Änderungen an Aufgaben">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
+                <FIELD NAME="taskid" TYPE="int" NOTNULL="true" LENGTH="10"/>
+                <FIELD NAME="userid" TYPE="int" NOTNULL="false" LENGTH="10"/>
+                <FIELD NAME="action" TYPE="char" NOTNULL="true" LENGTH="50"/>
+                <FIELD NAME="details" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="timecreated" TYPE="int" NOTNULL="true" LENGTH="10"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="taskidx" UNIQUE="false" FIELDS="taskid"/>
+            </INDEXES>
+        </TABLE>
+    </TABLES>
+</XMLDB>

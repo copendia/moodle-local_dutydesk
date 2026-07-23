@@ -1,0 +1,47 @@
+{{!
+    @template local_dutydesk/assigned_position_list
+
+    Overview of the current user's assigned positions grouped by department.
+
+    Example context (json):
+    {
+        "haspositions": false,
+        "noassignedpositions": "No assigned positions"
+    }
+}}
+<div class="local-dutydesk-assigned-overview">
+    {{#haspositions}}
+        {{#departments}}
+            <section class="local-dutydesk-assigned-department" id="assigned-department-{{id}}">
+                <h3 class="local-dutydesk-assigned-department-title">
+                    {{#isnodepartment}}
+                        {{#str}}nodepartmentlabel, local_dutydesk{{/str}}
+                    {{/isnodepartment}}
+                    {{^isnodepartment}}
+                        {{{name}}}
+                    {{/isnodepartment}}
+                </h3>
+                {{#hasownpositions}}
+                    <div class="local-dutydesk-position-grid">
+                        {{#ownpositions}}
+                            {{> local_dutydesk/assigned_position_card}}
+                        {{/ownpositions}}
+                    </div>
+                {{/hasownpositions}}
+                {{#hasmanagedpositions}}
+                    <div class="local-dutydesk-position-grid-heading text-muted small">
+                        {{#str}}assignedpositionsmanagedheading, local_dutydesk{{/str}}
+                    </div>
+                    <div class="local-dutydesk-position-grid local-dutydesk-position-grid-managed">
+                        {{#managedpositions}}
+                            {{> local_dutydesk/assigned_position_card}}
+                        {{/managedpositions}}
+                    </div>
+                {{/hasmanagedpositions}}
+            </section>
+        {{/departments}}
+    {{/haspositions}}
+    {{^haspositions}}
+        <div class="alert alert-info">{{noassignedpositions}}</div>
+    {{/haspositions}}
+</div>

@@ -1,0 +1,403 @@
+{{!
+    @template local_dutydesk/position_list
+
+    Template for listing positions with assigned tasks.
+
+    Example context (json):
+    {
+        "displaysearch": false,
+        "positions": [],
+        "haspositions": false,
+        "nosearchresults": "No positions match the search."
+    }
+}}
+{{#displaysearch}}
+    <form
+        class="local-dutydesk-task-search mb-4"
+        method="get"
+        action="{{searchaction}}"
+        data-region="task-search-form"
+        data-behavior="server"
+    >
+        <div class="row g-3 align-items-end">
+            {{#cansearch}}
+                <div class="col-12">
+                    <label class="form-label" for="local-dutydesk-position-search">{{#str}}searchpositions, local_dutydesk{{/str}}</label>
+                    <input
+                        type="search"
+                        class="form-control"
+                        id="local-dutydesk-position-search"
+                        name="search"
+                        value="{{searchvalue}}"
+                        placeholder="{{searchplaceholder}}"
+                        data-region="task-search-input"
+                        autocomplete="off"
+                    >
+                </div>
+            {{/cansearch}}
+            {{#displaypositionvisibilitytoggle}}
+                <div class="col-12 col-md-auto mt-2">
+                    <a
+                        class="local-dutydesk-positions-toggle{{#showallpositionschecked}} is-active{{/showallpositionschecked}}"
+                        href="{{positionvisibilitytoggleurl}}"
+                        role="switch"
+                        aria-checked="{{#showallpositionschecked}}true{{/showallpositionschecked}}{{^showallpositionschecked}}false{{/showallpositionschecked}}"
+                    >
+                        <span class="local-dutydesk-positions-toggle-track" aria-hidden="true">
+                            <span class="local-dutydesk-positions-toggle-thumb"></span>
+                        </span>
+                        <span class="local-dutydesk-positions-toggle-label">{{positionvisibilitylabel}}</span>
+                    </a>
+                </div>
+            {{/displaypositionvisibilitytoggle}}
+            {{#displaytopicareatoggle}}
+                <div class="col-12 col-md-auto mt-2">
+                    <a
+                        class="local-dutydesk-positions-toggle{{#topicareasonlychecked}} is-active{{/topicareasonlychecked}}"
+                        href="{{topicareatoggleurl}}"
+                        role="switch"
+                        aria-checked="{{#topicareasonlychecked}}true{{/topicareasonlychecked}}{{^topicareasonlychecked}}false{{/topicareasonlychecked}}"
+                    >
+                        <span class="local-dutydesk-positions-toggle-track" aria-hidden="true">
+                            <span class="local-dutydesk-positions-toggle-thumb"></span>
+                        </span>
+                        <span class="local-dutydesk-positions-toggle-label">{{topicareatogglelabel}}</span>
+                    </a>
+                </div>
+            {{/displaytopicareatoggle}}
+        </div>
+        {{#searchhiddenparams}}
+            <input type="hidden" name="{{name}}" value="{{value}}">
+        {{/searchhiddenparams}}
+    </form>
+{{/displaysearch}}
+<div class="local-dutydesk-position-list">
+    {{#positions}}
+        <div class="card mb-3 {{headerpatternclass}}" id="position-{{id}}">
+            <div class="local-dutydesk-position-list-header-media" aria-hidden="true"></div>
+            <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3">
+                <div class="local-dutydesk-task-heading">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <h5 class="mb-1">
+                            {{title}}
+                        </h5>
+                        {{#isarchived}}
+                            <span class="badge bg-secondary">{{#str}}archived, local_dutydesk{{/str}}</span>
+                            {{#hasarchiveddate}}
+                                <span class="text-muted small">{{#str}}archiveddate, local_dutydesk{{/str}} {{archiveddate}}</span>
+                            {{/hasarchiveddate}}
+                        {{/isarchived}}
+                        {{#istopicarea}}
+                            <span class="badge local-dutydesk-topicarea-badge">{{positiontypelabel}}</span>
+                        {{/istopicarea}}
+                    </div>
+                    {{#isvacant}}
+                        <div class="mb-1">
+                            <span class="badge bg-warning text-dark">{{vacantbadge}}</span>
+                        </div>
+                    {{/isvacant}}
+                    <!--div class="text-muted small">{{timestamp}}</div-->
+                    <div class="local-dutydesk-position-meta-table-wrap mt-3">
+                        <table class="local-dutydesk-position-meta-table" role="presentation">
+                            <tbody>
+                                <tr>
+                                    <td class="local-dutydesk-position-meta-label text-muted small pr-2">{{#str}}department, local_dutydesk{{/str}}</td>
+                                    <td class="local-dutydesk-position-meta-value small">{{{departmentdisplay}}}</td>
+                                </tr>
+                                {{^istopicarea}}
+                                    <tr>
+                                        <td class="local-dutydesk-position-meta-label text-muted small">{{#str}}positionprimaryuser, local_dutydesk{{/str}}</td>
+                                        <td class="local-dutydesk-position-meta-value small">{{{primaryuser}}}</td>
+                                    </tr>
+                                {{/istopicarea}}
+                                <!--tr>
+                                    <td class="local-dutydesk-position-meta-label text-muted small">{{#str}}positiondeputyuser, local_dutydesk{{/str}}</td>
+                                    <td class="local-dutydesk-position-meta-value small">{{{deputyuser}}}</td>
+                                </tr-->
+                                {{^istopicarea}}
+                                    <tr>
+                                        <td class="local-dutydesk-position-meta-label text-muted small pr-2">{{#str}}positionworkloadtotal, local_dutydesk{{/str}}</td>
+                                        <td class="local-dutydesk-position-meta-value small">
+                                            <div
+                                                class="local-dutydesk-workload-gauge local-dutydesk-workload-gauge--{{workloadgaugetone}}"
+                                                style="--gauge-value: {{workloadgaugevalue}};"
+                                                title="{{workloadtotaldisplay}}"
+                                            >
+                                                <span class="local-dutydesk-workload-gauge-value">{{workloadtotaldisplay}}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {{/istopicarea}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {{#canmanage}}
+                    <div class="btn-group mt-2 mt-md-0 small" role="group" aria-label="Position actions">
+                        <a
+                            class="btn btn-outline-secondary"
+                            href="{{editurl}}"
+                            data-action="edit-position"
+                            data-modal-url="{{editmodalurl}}"
+                            data-modal-title="{{title}}"
+                        >
+                            {{#str}}edit{{/str}}
+                        </a>
+                        {{#canarchive}}
+                            <form method="post" action="{{archiveurl}}" class="d-inline">
+                                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                <button type="submit" class="btn btn-outline-primary">{{#str}}archiveposition, local_dutydesk{{/str}}</button>
+                            </form>
+                        {{/canarchive}}
+                        {{#canrestore}}
+                            <form method="post" action="{{restoreurl}}" class="d-inline">
+                                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                <button type="submit" class="btn btn-outline-success">{{#str}}restoreposition, local_dutydesk{{/str}}</button>
+                            </form>
+                        {{/canrestore}}
+                        {{#candelete}}
+                            <form method="post" action="{{deleteurl}}" class="d-inline" onsubmit="return confirm('{{#str}}confirmdelete, local_dutydesk{{/str}}');">
+                                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                <button type="submit" class="btn btn-outline-danger">{{#str}}delete{{/str}}</button>
+                            </form>
+                        {{/candelete}}
+                    </div>
+                {{/canmanage}}
+            </div>
+            <div class="card-body">
+                {{#hasdescription}}
+                    <div class="mb-3">
+                        {{{description}}}
+                    </div>
+                {{/hasdescription}}
+                <div
+                    class="local-dutydesk-subtasks"
+                    data-region="subtasks"
+                    data-expand-label="{{#str}}expandallsubtasks, local_dutydesk{{/str}}"
+                    data-collapse-label="{{#str}}collapseallsubtasks, local_dutydesk{{/str}}"
+                >
+                    {{#hastasks}}
+                        <div
+                            class="local-dutydesk-subtasks-list{{#hasoverflow}} is-collapsed{{/hasoverflow}}"
+                            data-collapsible="{{#hasoverflow}}true{{/hasoverflow}}"
+                            {{#hasoverflow}}data-collapsed-height="{{collapseheight}}"{{/hasoverflow}}
+                        >
+                            <div class="local-dutydesk-position-task-table-header {{taskheaderpatternclass}}{{#istopicarea}} local-dutydesk-position-task-table-header-topicarea{{/istopicarea}}">
+                                <span>{{#str}}name, local_dutydesk{{/str}}</span>
+                                {{^istopicarea}}
+                                    <span>{{#str}}taskworkloadpercent, local_dutydesk{{/str}}</span>
+                                {{/istopicarea}}
+                                <span>{{#str}}edit, local_dutydesk{{/str}}</span>
+                            </div>
+                            {{#tasks}}
+                                <section class="local-dutydesk-subtask">
+                                    <div class="local-dutydesk-position-task-row{{#istopicarea}} local-dutydesk-position-task-row-topicarea{{/istopicarea}}">
+                                        <div class="local-dutydesk-position-task-name">
+                                            {{#hasdetails}}
+                                                <button
+                                                    class="local-dutydesk-subtask-toggle collapsed local-dutydesk-position-subtask-toggle"
+                                                    type="button"
+                                                    title="{{title}}"
+                                                    data-target="{{subtaskpanelid}}"
+                                                    aria-expanded="false"
+                                                    aria-controls="{{subtaskpanelid}}"
+                                                >
+                                                    <span class="local-dutydesk-subtask-toggle-icon" aria-hidden="true"></span>
+                                                    <span class="local-dutydesk-subtask-title">{{title}}</span>
+                                                </button>
+                                            {{/hasdetails}}
+                                            {{^hasdetails}}
+                                                <span class="local-dutydesk-subtask-title" title="{{title}}">{{title}}</span>
+                                            {{/hasdetails}}
+                                        </div>
+                                        {{^istopicarea}}
+                                            <div class="local-dutydesk-position-task-workload">{{workloaddisplay}}</div>
+                                        {{/istopicarea}}
+                                        <div class="local-dutydesk-position-task-actions">
+                                            <a
+                                                class="btn btn-outline-secondary btn-sm"
+                                                href="{{url}}"
+                                                data-action="edit-position-task"
+                                                data-modal-url="{{url}}"
+                                                data-modal-title="{{title}}"
+                                            >
+                                                {{#str}}edit{{/str}}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    {{#hasdetails}}
+                                        <div id="{{subtaskpanelid}}" class="local-dutydesk-subtask-panel" hidden>
+                                            {{#hasdescription}}
+                                                <div class="local-dutydesk-position-task-description">{{{descriptionhtml}}}</div>
+                                            {{/hasdescription}}
+                                            {{#hassubtasks}}
+                                                <ul class="list-unstyled local-dutydesk-position-subtask-list mb-0">
+                                                    {{#subtasks}}
+                                                        <li>
+                                                            <div class="local-dutydesk-position-subtask-line">
+                                                                <div class="local-dutydesk-position-subtask-main">
+                                                                    {{#hascontent}}
+                                                                        <button
+                                                                            type="button"
+                                                                            class="local-dutydesk-subtask-toggle collapsed local-dutydesk-position-subtask-content-toggle"
+                                                                            title="{{title}}"
+                                                                            data-action="toggle-subtask-content"
+                                                                            data-target="{{contentpanelid}}"
+                                                                            aria-expanded="false"
+                                                                            aria-controls="{{contentpanelid}}"
+                                                                        >
+                                                                            <span class="local-dutydesk-subtask-toggle-icon" aria-hidden="true"></span>
+                                                                            <span class="local-dutydesk-position-subtask-link">{{title}}</span>
+                                                                        </button>
+                                                                    {{/hascontent}}
+                                                                    {{^hascontent}}
+                                                                        <span class="local-dutydesk-position-subtask-link">{{title}}</span>
+                                                                    {{/hascontent}}
+                                                                    {{#hascontent}}
+                                                                        <div id="{{contentpanelid}}" class="local-dutydesk-position-subtask-content" hidden>
+                                                                            {{{content}}}
+                                                                        </div>
+                                                                    {{/hascontent}}
+                                                                </div>
+                                                                <div class="local-dutydesk-position-subtask-actions">
+                                                                    <a
+                                                                        class="btn btn-outline-secondary local-dutydesk-btn-xs local-dutydesk-position-subtask-edit"
+                                                                        href="{{url}}"
+                                                                        data-action="edit-position-subtask"
+                                                                        data-modal-url="{{url}}"
+                                                                        data-modal-title="{{title}}"
+                                                                    >
+                                                                        {{#str}}edit{{/str}}
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    {{/subtasks}}
+                                                </ul>
+                                            {{/hassubtasks}}
+                                        </div>
+                                    {{/hasdetails}}
+                                </section>
+                            {{/tasks}}
+                            {{#overflowtasks}}
+                                <section class="local-dutydesk-subtask overflow-task">
+                                    <div class="local-dutydesk-position-task-row{{#istopicarea}} local-dutydesk-position-task-row-topicarea{{/istopicarea}}">
+                                        <div class="local-dutydesk-position-task-name">
+                                            {{#hasdetails}}
+                                                <button
+                                                    class="local-dutydesk-subtask-toggle collapsed local-dutydesk-position-subtask-toggle"
+                                                    type="button"
+                                                    title="{{title}}"
+                                                    data-target="{{subtaskpanelid}}"
+                                                    aria-expanded="false"
+                                                    aria-controls="{{subtaskpanelid}}"
+                                                >
+                                                    <span class="local-dutydesk-subtask-toggle-icon" aria-hidden="true"></span>
+                                                    <span class="local-dutydesk-subtask-title">{{title}}</span>
+                                                </button>
+                                            {{/hasdetails}}
+                                            {{^hasdetails}}
+                                                <span class="local-dutydesk-subtask-title" title="{{title}}">{{title}}</span>
+                                            {{/hasdetails}}
+                                        </div>
+                                        {{^istopicarea}}
+                                            <div class="local-dutydesk-position-task-workload">{{workloaddisplay}}</div>
+                                        {{/istopicarea}}
+                                        <div class="local-dutydesk-position-task-actions">
+                                            <a
+                                                class="btn btn-outline-secondary btn-sm"
+                                                href="{{url}}"
+                                                data-action="edit-position-task"
+                                                data-modal-url="{{url}}"
+                                                data-modal-title="{{title}}"
+                                            >
+                                                {{#str}}edit{{/str}}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    {{#hasdetails}}
+                                        <div id="{{subtaskpanelid}}" class="local-dutydesk-subtask-panel" hidden>
+                                            {{#hasdescription}}
+                                                <div class="local-dutydesk-position-task-description">{{{descriptionhtml}}}</div>
+                                            {{/hasdescription}}
+                                            {{#hassubtasks}}
+                                                <ul class="list-unstyled local-dutydesk-position-subtask-list mb-0">
+                                                    {{#subtasks}}
+                                                        <li>
+                                                            <div class="local-dutydesk-position-subtask-line">
+                                                                <div class="local-dutydesk-position-subtask-main">
+                                                                    {{#hascontent}}
+                                                                        <button
+                                                                            type="button"
+                                                                            class="local-dutydesk-subtask-toggle collapsed local-dutydesk-position-subtask-content-toggle"
+                                                                            title="{{title}}"
+                                                                            data-action="toggle-subtask-content"
+                                                                            data-target="{{contentpanelid}}"
+                                                                            aria-expanded="false"
+                                                                            aria-controls="{{contentpanelid}}"
+                                                                        >
+                                                                            <span class="local-dutydesk-subtask-toggle-icon" aria-hidden="true"></span>
+                                                                            <span class="local-dutydesk-position-subtask-link">{{title}}</span>
+                                                                        </button>
+                                                                    {{/hascontent}}
+                                                                    {{^hascontent}}
+                                                                        <span class="local-dutydesk-position-subtask-link">{{title}}</span>
+                                                                    {{/hascontent}}
+                                                                    {{#hascontent}}
+                                                                        <div id="{{contentpanelid}}" class="local-dutydesk-position-subtask-content" hidden>
+                                                                            {{{content}}}
+                                                                        </div>
+                                                                    {{/hascontent}}
+                                                                </div>
+                                                                <div class="local-dutydesk-position-subtask-actions">
+                                                                    <a
+                                                                        class="btn btn-outline-secondary local-dutydesk-btn-xs local-dutydesk-position-subtask-edit"
+                                                                        href="{{url}}"
+                                                                        data-action="edit-position-subtask"
+                                                                        data-modal-url="{{url}}"
+                                                                        data-modal-title="{{title}}"
+                                                                    >
+                                                                        {{#str}}edit{{/str}}
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    {{/subtasks}}
+                                                </ul>
+                                            {{/hassubtasks}}
+                                        </div>
+                                    {{/hasdetails}}
+                                </section>
+                            {{/overflowtasks}}
+                            {{#hasoverflow}}
+                                <div class="local-dutydesk-subtasks-togglecontainer">
+                                    <button
+                                        type="button"
+                                        class="local-dutydesk-subtasks-toggleall" aria-label="{{#str}}expandallsubtasks, local_dutydesk{{/str}}"
+                                        data-action="toggle-all"
+                                        aria-expanded="false"
+                                    >
+                                        <span class="local-dutydesk-subtasks-toggleicon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">{{#str}}expandallsubtasks, local_dutydesk{{/str}}</span>
+                                    </button>
+                                </div>
+                            {{/hasoverflow}}
+                        </div>
+                    {{/hastasks}}
+                    {{^hastasks}}
+                        <div class="text-muted small">{{#str}}notasks, local_dutydesk{{/str}}</div>
+                    {{/hastasks}}
+                </div>
+            </div>
+        </div>
+        <div class="local-dutydesk-list-divider" aria-hidden="true"></div>
+    {{/positions}}
+    {{^positions}}
+        {{#hassearch}}
+            <div class="alert alert-info">{{#str}}nosearchresultspositions, local_dutydesk{{/str}}</div>
+        {{/hassearch}}
+        {{^hassearch}}
+            <div class="alert alert-info">{{#str}}nopositions, local_dutydesk{{/str}}</div>
+        {{/hassearch}}
+    {{/positions}}
+</div>

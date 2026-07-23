@@ -1,0 +1,34 @@
+{{!
+    @template local_dutydesk/task_history_modal
+
+    Task history modal body.
+
+    Example context (json):
+    {
+        "hasentries": true,
+        "entries": [{
+            "action": "Task created",
+            "user": "System",
+            "time": "2026-01-01",
+            "details": "Created"
+        }]
+    }
+}}
+<div class="local-dutydesk-task-history">
+    {{#hasentries}}
+        <ul class="list-group">
+            {{#entries}}
+                <li class="list-group-item">
+                    <div class="fw-semibold">{{action}}</div>
+                    <div class="text-muted small">{{user}} · {{time}}</div>
+                    {{#details}}
+                        <div class="mt-2">{{{details}}}</div>
+                    {{/details}}
+                </li>
+            {{/entries}}
+        </ul>
+    {{/hasentries}}
+    {{^hasentries}}
+        <div class="text-muted">{{#str}}taskhistoryempty, local_dutydesk{{/str}}</div>
+    {{/hasentries}}
+</div>

@@ -1,0 +1,99 @@
+{{!
+    @template local_dutydesk/department_list
+
+    Template for listing departments with their linked positions.
+
+    Example context (json):
+    {
+        "departments": [{
+            "id": 1,
+            "name": "Example department",
+            "timestamp": "2026-01-01",
+            "canmanage": false,
+            "hasmanagers": false,
+            "hascategories": false,
+            "haspositions": false
+        }]
+    }
+}}
+<div class="local-dutydesk-department-list">
+    {{#departments}}
+        <div class="card mb-3" id="department-{{id}}">
+            <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3">
+                <div class="local-dutydesk-task-heading">
+                    <h5 class="mb-1">{{name}}</h5>
+                    <div class="text-muted small">{{timestamp}}</div>
+                </div>
+                {{#canmanage}}
+                    <div class="btn-group mt-2 mt-md-0" role="group" aria-label="{{#str}}departmentactions, local_dutydesk{{/str}}">
+                        <a
+                            class="btn btn-outline-secondary"
+                            href="{{editurl}}"
+                            data-action="edit-department"
+                            data-modal-url="{{editmodalurl}}"
+                            data-modal-title="{{name}}"
+                        >{{#str}}edit{{/str}}</a>
+                        {{#candelete}}
+                            <form method="post" action="{{deleteurl}}" class="d-inline" onsubmit="return confirm('{{#str}}confirmdelete, local_dutydesk{{/str}}');">
+                                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                <button type="submit" class="btn btn-outline-danger">{{#str}}delete{{/str}}</button>
+                            </form>
+                        {{/candelete}}
+                    </div>
+                {{/canmanage}}
+            </div>
+            <div class="card-body">
+                {{#hasmanagers}}
+                    <div class="local-dutydesk-department-managers mb-3 text-muted small">
+                        <strong>{{#str}}departmentmanagers, local_dutydesk{{/str}}:</strong>
+                        <ul class="list-inline mb-0">
+                            {{#managers}}
+                                <li class="list-inline-item"><a href="{{profileurl}}">{{name}}</a></li>
+                            {{/managers}}
+                        </ul>
+                    </div>
+                {{/hasmanagers}}
+                {{#canmanage}}
+                    {{^hasmanagers}}
+                        <div class="text-muted small mb-3">{{#str}}nodepartmentmanagers, local_dutydesk{{/str}}</div>
+                    {{/hasmanagers}}
+                {{/canmanage}}
+                {{#hasdescription}}
+                    <div class="mb-3">
+                        {{{description}}}
+                    </div>
+                {{/hasdescription}}
+                {{^hasdescription}}
+                    <div class="text-muted small mb-3">{{#str}}nodescription, local_dutydesk{{/str}}</div>
+                {{/hasdescription}}
+                <div class="local-dutydesk-subtasks">
+                    <div class="local-dutydesk-subtasks-header">
+                        <h6 class="mb-0">
+                            {{#str}}positions, local_dutydesk{{/str}} ({{positioncount}})
+                        </h6>
+                    </div>
+                    {{#haspositions}}
+                        <div class="local-dutydesk-subtasks-list">
+                            {{#positions}}
+                                <section class="local-dutydesk-subtask">
+                                    <div class="local-dutydesk-subtask-header">
+                                        <a class="local-dutydesk-subtask-title-link" href="{{url}}">
+                                            <span class="local-dutydesk-subtask-title">{{title}}</span>
+                                        </a>
+                                    </div>
+                                </section>
+                            {{/positions}}
+                        </div>
+                    {{/haspositions}}
+                    {{^haspositions}}
+                        <div class="text-muted small">{{#str}}nodepartmentpositions, local_dutydesk{{/str}}</div>
+                    {{/haspositions}}
+                </div>
+            </div>
+        </div>
+    <div class="local-dutydesk-list-divider" aria-hidden="true"></div>
+    {{/departments}}
+    {{^departments}}
+        <div class="alert alert-info">{{#str}}nodepartments, local_dutydesk{{/str}}</div>
+    {{/departments}}
+</div>

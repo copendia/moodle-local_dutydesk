@@ -1,0 +1,89 @@
+{{!
+    @template local_dutydesk/task_modal_editor
+
+    Task modal editor with form and subtasks.
+
+    Example context (json):
+    {
+        "hasmessage": false,
+        "taskformhtml": "<form></form>",
+        "hassubtasks": false,
+        "newsubtaskurl": "#"
+    }
+}}
+<div class="local-dutydesk-task-modal-editor">
+    <div class="local-dutydesk-task-modal-card">
+        {{#hasmessage}}
+            <div class="alert alert-success local-dutydesk-task-modal-message" role="alert">{{message}}</div>
+        {{/hasmessage}}
+
+        <div class="local-dutydesk-task-modal-section local-dutydesk-task-modal-form">
+            {{{taskformhtml}}}
+        </div>
+
+        <div class="local-dutydesk-task-modal-section local-dutydesk-task-modal-subtasks">
+            <div class="local-dutydesk-task-modal-subtasks-panel">
+                <div class="local-dutydesk-task-modal-subtasks-header d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0 local-dutydesk-task-modal-subtasks-title">{{#str}}subtasks, local_dutydesk{{/str}}</h5>
+                    <a class="btn btn-outline-secondary btn-sm" href="{{newsubtaskurl}}">{{#str}}newsubtask, local_dutydesk{{/str}}</a>
+                </div>
+
+                {{#hassubtasks}}
+                    <div class="local-dutydesk-subtasks" data-region="subtasks">
+                    <div class="local-dutydesk-subtasks-list local-dutydesk-task-modal-subtasks-list">
+                        {{#subtasks}}
+                            <section class="local-dutydesk-subtask local-dutydesk-task-modal-subtasks-item" data-subtask-id="{{id}}">
+                                <div class="local-dutydesk-subtask-header">
+                                    <button
+                                        class="local-dutydesk-subtask-toggle collapsed"
+                                        type="button"
+                                        data-target="modal-subtask-panel-{{id}}"
+                                        aria-expanded="false"
+                                        aria-controls="modal-subtask-panel-{{id}}"
+                                    >
+                                        <span class="local-dutydesk-subtask-toggle-icon" aria-hidden="true"></span>
+                                        <span class="local-dutydesk-subtask-title">{{title}}</span>
+                                    </button>
+                                    <a class="btn btn-outline-secondary btn-sm" href="{{editurl}}">{{#str}}edit{{/str}}</a>
+                                </div>
+                                <div id="modal-subtask-panel-{{id}}" class="local-dutydesk-subtask-panel" hidden>
+                                    {{#description}}
+                                        <div class="local-dutydesk-subtask-description">
+                                            {{{description}}}
+                                        </div>
+                                    {{/description}}
+                                    {{^description}}
+                                        <div class="text-muted small">
+                                            {{#str}}nosubtaskdescription, local_dutydesk{{/str}}
+                                        </div>
+                                    {{/description}}
+                                    {{#hasdocuments}}
+                                        <div class="local-dutydesk-subtask-documents mt-3">
+                                            <h6 class="local-dutydesk-subtask-documents-title">
+                                                {{#str}}subtaskdocuments, local_dutydesk{{/str}}
+                                            </h6>
+                                            <ul class="list-unstyled mb-0">
+                                                {{#documents}}
+                                                    <li class="local-dutydesk-subtask-document" data-mimetype="{{mimetype}}">
+                                                        <a href="{{url}}">
+                                                            <span class="local-dutydesk-subtask-document-name">{{name}}</span>
+                                                            <span class="local-dutydesk-subtask-document-size text-muted">({{size}})</span>
+                                                        </a>
+                                                    </li>
+                                                {{/documents}}
+                                            </ul>
+                                        </div>
+                                    {{/hasdocuments}}
+                                </div>
+                            </section>
+                        {{/subtasks}}
+                    </div>
+                    </div>
+                {{/hassubtasks}}
+                {{^hassubtasks}}
+                    <div class="alert alert-info">{{#str}}nosubtasks, local_dutydesk{{/str}}</div>
+                {{/hassubtasks}}
+            </div>
+        </div>
+    </div>
+</div>
