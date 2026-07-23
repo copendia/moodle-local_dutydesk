@@ -82,6 +82,7 @@ jobs:
       DB_USER: ${{ matrix.dbuser }}
       DB_PASS: ${{ matrix.dbpass }}
       MOODLE_BRANCH: ${{ matrix.moodle }}
+      CI_DIR: ${{ runner.temp }}/moodle-plugin-ci
       MOODLE_DIR: ${{ github.workspace }}/moodle-ci
       PLUGIN_DIR: ${{ github.workspace }}
       INSTALLED_PLUGIN_DIR: ${{ github.workspace }}/moodle-ci/local/dutydesk
@@ -114,11 +115,11 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Install Moodle Plugin CI
-        run: composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
+        run: composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci "$CI_DIR" ^4
 
       - name: Install Moodle test site
         run: >
-          ci/bin/moodle-plugin-ci install
+          "$CI_DIR/bin/moodle-plugin-ci" install
           --moodle="$MOODLE_DIR"
           --plugin="$PLUGIN_DIR"
           --db-type="$DB"
@@ -133,22 +134,22 @@ jobs:
         run: php "$MOODLE_DIR/admin/tool/phpunit/cli/init.php" --disable-composer
 
       - name: PHP lint
-        run: ci/bin/moodle-plugin-ci phplint "$INSTALLED_PLUGIN_DIR"
+        run: "$CI_DIR/bin/moodle-plugin-ci" phplint "$INSTALLED_PLUGIN_DIR"
 
       - name: Plugin validation
-        run: ci/bin/moodle-plugin-ci validate "$INSTALLED_PLUGIN_DIR"
+        run: "$CI_DIR/bin/moodle-plugin-ci" validate "$INSTALLED_PLUGIN_DIR"
 
       - name: Upgrade savepoints
-        run: ci/bin/moodle-plugin-ci savepoints "$INSTALLED_PLUGIN_DIR"
+        run: "$CI_DIR/bin/moodle-plugin-ci" savepoints "$INSTALLED_PLUGIN_DIR"
 
       - name: Moodle codechecker
-        run: ci/bin/moodle-plugin-ci codechecker "$INSTALLED_PLUGIN_DIR"
+        run: "$CI_DIR/bin/moodle-plugin-ci" codechecker "$INSTALLED_PLUGIN_DIR"
 
       - name: Mustache lint
-        run: ci/bin/moodle-plugin-ci mustache "$INSTALLED_PLUGIN_DIR"
+        run: "$CI_DIR/bin/moodle-plugin-ci" mustache "$INSTALLED_PLUGIN_DIR"
 
       - name: AMD lint and build check
-        run: ci/bin/moodle-plugin-ci grunt --moodle="$MOODLE_DIR" --tasks=amd "$INSTALLED_PLUGIN_DIR"
+        run: "$CI_DIR/bin/moodle-plugin-ci" grunt --moodle="$MOODLE_DIR" --tasks=amd "$INSTALLED_PLUGIN_DIR"
 
       - name: PHPUnit
-        run: ci/bin/moodle-plugin-ci phpunit --moodle="$MOODLE_DIR" "$INSTALLED_PLUGIN_DIR"
+        run: "$CI_DIR/bin/moodle-plugin-ci" phpunit --moodle="$MOODLE_DIR" "$INSTALLED_PLUGIN_DIR"
