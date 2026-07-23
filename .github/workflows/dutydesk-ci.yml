@@ -104,6 +104,7 @@ jobs:
             ctype, curl, dom, exif, fileinfo, gd, hash, iconv, intl, json,
             mbstring, mysqli, pgsql, openssl, pcre, simplexml, soap, sodium, spl,
             tokenizer, xml, xmlreader, zip, zlib
+          ini-values: max_input_vars=5000
           coverage: none
           tools: composer:v2
 
