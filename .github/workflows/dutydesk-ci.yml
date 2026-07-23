@@ -127,6 +127,10 @@ jobs:
           --db-user="$DB_USER"
           --db-pass="$DB_PASS"
           --branch="$MOODLE_BRANCH"
+          --no-init
+
+      - name: Initialise PHPUnit test site
+        run: php "$MOODLE_DIR/admin/tool/phpunit/cli/init.php" --disable-composer
 
       - name: PHP lint
         run: ci/bin/moodle-plugin-ci phplint "$INSTALLED_PLUGIN_DIR"
