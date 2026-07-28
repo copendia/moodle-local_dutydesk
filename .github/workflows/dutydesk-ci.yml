@@ -1,8 +1,8 @@
 name: DutyDesk CI
 
 on:
-  pull_request:
-  push:
+  pull_request: {}
+  push: {}
 
 concurrency:
   group: dutydesk-ci-${{ github.ref }}
@@ -130,22 +130,29 @@ jobs:
         run: php "$MOODLE_DIR/admin/tool/phpunit/cli/init.php" --disable-composer
 
       - name: PHP lint
-        run: "$CI_DIR/bin/moodle-plugin-ci" phplint "$INSTALLED_PLUGIN_DIR"
+        run: >
+          "$CI_DIR/bin/moodle-plugin-ci" phplint "$INSTALLED_PLUGIN_DIR"
 
       - name: Plugin validation
-        run: "$CI_DIR/bin/moodle-plugin-ci" validate "$INSTALLED_PLUGIN_DIR"
+        run: >
+          "$CI_DIR/bin/moodle-plugin-ci" validate "$INSTALLED_PLUGIN_DIR"
 
       - name: Upgrade savepoints
-        run: "$CI_DIR/bin/moodle-plugin-ci" savepoints "$INSTALLED_PLUGIN_DIR"
+        run: >
+          "$CI_DIR/bin/moodle-plugin-ci" savepoints "$INSTALLED_PLUGIN_DIR"
 
       - name: Moodle codechecker
-        run: "$CI_DIR/bin/moodle-plugin-ci" codechecker "$INSTALLED_PLUGIN_DIR"
+        run: >
+          "$CI_DIR/bin/moodle-plugin-ci" codechecker "$INSTALLED_PLUGIN_DIR"
 
       - name: Mustache lint
-        run: "$CI_DIR/bin/moodle-plugin-ci" mustache "$INSTALLED_PLUGIN_DIR"
+        run: >
+          "$CI_DIR/bin/moodle-plugin-ci" mustache "$INSTALLED_PLUGIN_DIR"
 
       - name: AMD lint and build check
-        run: "$CI_DIR/bin/moodle-plugin-ci" grunt --moodle="$MOODLE_DIR" --tasks=amd "$INSTALLED_PLUGIN_DIR"
+        run: >
+          "$CI_DIR/bin/moodle-plugin-ci" grunt --moodle="$MOODLE_DIR" --tasks=amd "$INSTALLED_PLUGIN_DIR"
 
       - name: PHPUnit
-        run: "$CI_DIR/bin/moodle-plugin-ci" phpunit --moodle="$MOODLE_DIR" "$INSTALLED_PLUGIN_DIR"
+        run: >
+          "$CI_DIR/bin/moodle-plugin-ci" phpunit --moodle="$MOODLE_DIR" "$INSTALLED_PLUGIN_DIR"
