@@ -31,7 +31,7 @@ updated consistently instead of being tracked in disconnected spreadsheets.
 
 ### AMD / JavaScript
 
-Build AMD modules after changing files in `amd/src`:
+Build AMD modules from the Moodle root directory after changing files in `amd/src`:
 
 ```bash
 grunt amd --root=local/dutydesk --force
