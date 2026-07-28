@@ -75,7 +75,7 @@ class controller {
             redirect(new moodle_url('/local/dutydesk/tasks.php'));
         } else if ($data = $form->get_data()) {
             $departmentid = (int)($data->departmentid ?? 0);
-            if (!$DB->record_exists('dutydesk_department', ['id' => $departmentid])) {
+            if (!$DB->record_exists('local_dutydesk_department', ['id' => $departmentid])) {
                 throw new \moodle_exception('invaliddepartment', 'local_dutydesk');
             }
 

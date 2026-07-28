@@ -110,7 +110,7 @@ class position_form extends \moodleform {
         $mform->addRule('title', null, 'required', null, 'client');
 
         if (empty($departmentoptions)) {
-            $departmentoptions = $DB->get_records_menu('dutydesk_department', null, 'name ASC', 'id, name');
+            $departmentoptions = $DB->get_records_menu('local_dutydesk_department', null, 'name ASC', 'id, name');
         }
         $departmentoptions = array_map(static function ($name) {
             return \format_string($name);

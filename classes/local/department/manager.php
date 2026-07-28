@@ -44,8 +44,8 @@ class manager {
             return;
         }
 
-        $DB->delete_records('dutydesk_department', ['id' => $departmentid]);
-        $DB->delete_records('dutydesk_department_manager', ['departmentid' => $departmentid]);
+        $DB->delete_records('local_dutydesk_department', ['id' => $departmentid]);
+        $DB->delete_records('local_dutydesk_deptmgr', ['departmentid' => $departmentid]);
     }
 
     /**
@@ -60,7 +60,7 @@ class manager {
     public static function create_department(\stdClass $department, array $managerids, array $categoryids, int $assignedby): int {
         global $DB;
 
-        $departmentid = (int)$DB->insert_record('dutydesk_department', $department);
+        $departmentid = (int)$DB->insert_record('local_dutydesk_department', $department);
         \local_dutydesk_set_department_managers($departmentid, $managerids, $assignedby);
         self::sync_categories($departmentid, $categoryids);
 
@@ -79,7 +79,7 @@ class manager {
     public static function update_department(\stdClass $department, ?array $managerids, array $categoryids, int $assignedby): void {
         global $DB;
 
-        $DB->update_record('dutydesk_department', $department);
+        $DB->update_record('local_dutydesk_department', $department);
 
         if ($managerids !== null) {
             \local_dutydesk_set_department_managers((int)$department->id, $managerids, $assignedby);
@@ -99,7 +99,7 @@ class manager {
 
         if ($departmentid > 0) {
             $records = $DB->get_records_select(
-                'dutydesk_category',
+                'local_dutydesk_category',
                 'departmentid IS NULL OR departmentid = :departmentid',
                 ['departmentid' => $departmentid],
                 'name ASC',
@@ -107,7 +107,7 @@ class manager {
             );
         } else {
             $records = $DB->get_records_select(
-                'dutydesk_category',
+                'local_dutydesk_category',
                 'departmentid IS NULL',
                 [],
                 'name ASC',
@@ -146,7 +146,7 @@ class manager {
             [$insql, $params] = $DB->get_in_or_equal($categoryids, SQL_PARAMS_NAMED);
             $params['departmentid'] = $departmentid;
             $DB->execute(
-                "UPDATE {dutydesk_category}
+                "UPDATE {local_dutydesk_category}
                     SET departmentid = :departmentid
                   WHERE id {$insql}",
                 $params
@@ -162,7 +162,7 @@ class manager {
         }
 
         $DB->execute(
-            "UPDATE {dutydesk_category}
+            "UPDATE {local_dutydesk_category}
                 SET departmentid = NULL
               WHERE {$wheresql}",
             $params

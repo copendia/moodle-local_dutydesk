@@ -120,7 +120,7 @@ if (!$canmanagealltasks && !local_dutydesk_user_can_edit_task($taskid)) {
     );
 }
 
-$task = $DB->get_record('dutydesk_task', ['id' => $taskid], '*', MUST_EXIST);
+$task = $DB->get_record('local_dutydesk_task', ['id' => $taskid], '*', MUST_EXIST);
 
 $editoroptions = [
     'maxfiles' => EDITOR_UNLIMITED_FILES,
@@ -139,8 +139,8 @@ $filemanageroptions = [
 
 $currentassignmentinfo = $DB->get_record_sql(
     "SELECT ta.positionid, p.departmentid
-       FROM {dutydesk_taskassignment} ta
-       JOIN {dutydesk_position} p ON p.id = ta.positionid
+       FROM {local_dutydesk_taskassign} ta
+       JOIN {local_dutydesk_position} p ON p.id = ta.positionid
       WHERE ta.taskid = :taskid",
     ['taskid' => $taskid]
 );
@@ -205,7 +205,7 @@ if ($data = $form->get_data()) {
         ? local_dutydesk_normalize_workload_value($submittedworkload)
         : null;
 
-    $existingtask = $DB->get_record('dutydesk_task', ['id' => $taskid], '*', MUST_EXIST);
+    $existingtask = $DB->get_record('local_dutydesk_task', ['id' => $taskid], '*', MUST_EXIST);
     $beforedocsnapshot = local_dutydesk_get_task_document_snapshot($context->id, $taskid);
     $canedittitle = local_dutydesk_user_can_manage_departments($USER->id) || $canmanagealltasks;
     if (!$canedittitle) {
@@ -224,7 +224,7 @@ if ($data = $form->get_data()) {
 
     $record->description = $data->description;
     $record->descriptionformat = $data->descriptionformat;
-    $DB->update_record('dutydesk_task', $record);
+    $DB->update_record('local_dutydesk_task', $record);
 
     file_save_draft_area_files(
         $data->documents_filemanager ?? 0,
@@ -261,14 +261,14 @@ if ($data = $form->get_data()) {
     }
 
     $message = get_string('updated', 'local_dutydesk');
-    $task = $DB->get_record('dutydesk_task', ['id' => $taskid], '*', MUST_EXIST);
+    $task = $DB->get_record('local_dutydesk_task', ['id' => $taskid], '*', MUST_EXIST);
     if ($ismodal) {
         local_dutydesk_close_modal_and_exit();
     }
 }
 
 $taskrecord = $task;
-$assignment = $DB->get_record('dutydesk_taskassignment', ['taskid' => $taskid]);
+$assignment = $DB->get_record('local_dutydesk_taskassign', ['taskid' => $taskid]);
 if ($assignment) {
     $taskrecord->positionid = $assignment->positionid;
     if (isset($assignment->workloadpercent)) {
@@ -306,7 +306,7 @@ $taskformhtml = ob_get_clean();
 $subtasks = [];
 $fs = get_file_storage();
 $subtaskrecords = $DB->get_records(
-    'dutydesk_subtask',
+    'local_dutydesk_subtask',
     ['taskid' => $taskid],
     'sortorder ASC, id ASC',
     'id, title, description, descriptionformat'

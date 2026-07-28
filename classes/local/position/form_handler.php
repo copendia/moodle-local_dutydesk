@@ -119,15 +119,15 @@ class form_handler {
             );
         } else if ($id) {
             permissions::require_manage_position($id, $caneditpositions, $canmanageall, $manageablepositionids, $context);
-            $record = $DB->get_record('dutydesk_position', ['id' => $id]);
+            $record = $DB->get_record('local_dutydesk_position', ['id' => $id]);
             if ($record) {
-                $deputy = $DB->get_record('dutydesk_position_deputy', ['positionid' => $record->id]);
+                $deputy = $DB->get_record('local_dutydesk_posdeputy', ['positionid' => $record->id]);
                 if ($deputy) {
                     $record->deputyuserid = $deputy->userid;
                 }
                 $record->positiontype = \local_dutydesk_normalize_position_type($record->positiontype ?? null);
                 $taskassignmentrecords = $DB->get_records_menu(
-                    'dutydesk_taskassignment',
+                    'local_dutydesk_taskassign',
                     ['positionid' => $record->id],
                     '',
                     'taskid, taskid'
@@ -158,14 +158,14 @@ class form_handler {
         global $DB;
 
         if ($canmanageall) {
-            return $DB->get_records_menu('dutydesk_department', null, 'name ASC', 'id, name');
+            return $DB->get_records_menu('local_dutydesk_department', null, 'name ASC', 'id, name');
         }
         if (empty($manageddepartmentids)) {
             return [];
         }
 
         $departmentoptions = [];
-        $departmentrecords = $DB->get_records_list('dutydesk_department', 'id', $manageddepartmentids, 'name ASC', 'id, name');
+        $departmentrecords = $DB->get_records_list('local_dutydesk_department', 'id', $manageddepartmentids, 'name ASC', 'id, name');
         foreach ($departmentrecords as $dept) {
             $departmentoptions[$dept->id] = $dept->name;
         }
@@ -184,11 +184,11 @@ class form_handler {
         $taskoptioncategories = [];
         $taskcategoryoptions = [];
         $taskcategorydepartments = [];
-        $taskassignmentmap = $DB->get_records_menu('dutydesk_taskassignment', null, '', 'taskid, positionid');
+        $taskassignmentmap = $DB->get_records_menu('local_dutydesk_taskassign', null, '', 'taskid, positionid');
         $taskrecords = $DB->get_records_sql(
             "SELECT t.id, t.title, t.categoryid, c.name AS categoryname, c.departmentid AS categorydepartmentid
-               FROM {dutydesk_task} t
-          LEFT JOIN {dutydesk_category} c ON c.id = t.categoryid
+               FROM {local_dutydesk_task} t
+          LEFT JOIN {local_dutydesk_category} c ON c.id = t.categoryid
            ORDER BY c.name ASC, t.title ASC"
         );
         $assignedlabel = ' ' . get_string('positiontasksassignedlabel', 'local_dutydesk');

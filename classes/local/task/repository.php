@@ -36,7 +36,7 @@ class repository {
     public static function get_categories(): array {
         global $DB;
 
-        return $DB->get_records('dutydesk_category', null, 'name ASC', 'id, name');
+        return $DB->get_records('local_dutydesk_category', null, 'name ASC', 'id, name');
     }
 
     /**
@@ -54,8 +54,8 @@ class repository {
 
         $record = $DB->get_record_sql(
             "SELECT ta.positionid, p.departmentid
-               FROM {dutydesk_taskassignment} ta
-               JOIN {dutydesk_position} p ON p.id = ta.positionid
+               FROM {local_dutydesk_taskassign} ta
+               JOIN {local_dutydesk_position} p ON p.id = ta.positionid
               WHERE ta.taskid = :taskid",
             ['taskid' => $taskid]
         );
@@ -72,7 +72,7 @@ class repository {
     public static function get_task_for_form(int $taskid): \stdClass {
         global $DB;
 
-        return $DB->get_record('dutydesk_task', ['id' => $taskid], '*', MUST_EXIST);
+        return $DB->get_record('local_dutydesk_task', ['id' => $taskid], '*', MUST_EXIST);
     }
 
     /**
@@ -84,7 +84,7 @@ class repository {
     public static function get_task_assignment(int $taskid): ?\stdClass {
         global $DB;
 
-        $record = $DB->get_record('dutydesk_taskassignment', ['taskid' => $taskid]);
+        $record = $DB->get_record('local_dutydesk_taskassign', ['taskid' => $taskid]);
         return $record ?: null;
     }
 
@@ -104,7 +104,7 @@ class repository {
         global $DB;
 
         if ($canviewalltasks) {
-            return $DB->get_records('dutydesk_department', null, 'name ASC', 'id, name');
+            return $DB->get_records('local_dutydesk_department', null, 'name ASC', 'id, name');
         }
 
         $alloweddepartmentids = $userdepartmentids;
@@ -112,7 +112,7 @@ class repository {
             [$positionsql, $positionparams] = $DB->get_in_or_equal($manageablepositionids, SQL_PARAMS_NAMED);
             $manageddepartmentidsrecords = $DB->get_fieldset_sql(
                 "SELECT DISTINCT departmentid
-                   FROM {dutydesk_position}
+                   FROM {local_dutydesk_position}
                   WHERE id {$positionsql}
                     AND departmentid IS NOT NULL
                     AND departmentid > 0",
@@ -127,6 +127,6 @@ class repository {
         }
 
         [$deptsql, $deptparams] = $DB->get_in_or_equal($alloweddepartmentids, SQL_PARAMS_NAMED);
-        return $DB->get_records_select('dutydesk_department', "id {$deptsql}", $deptparams, 'name ASC', 'id, name');
+        return $DB->get_records_select('local_dutydesk_department', "id {$deptsql}", $deptparams, 'name ASC', 'id, name');
     }
 }

@@ -126,7 +126,7 @@ final class dashboard_presenter_test extends \advanced_testcase {
     private function create_department(string $name): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_department', (object) [
+        return (int)$DB->insert_record('local_dutydesk_department', (object) [
             'name' => $name,
             'description' => '',
             'timestamp' => time(),
@@ -146,7 +146,7 @@ final class dashboard_presenter_test extends \advanced_testcase {
     ): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_position', (object) [
+        return (int)$DB->insert_record('local_dutydesk_position', (object) [
             'title' => $title,
             'positiontype' => $positiontype,
             'departmentid' => $departmentid,
@@ -166,7 +166,7 @@ final class dashboard_presenter_test extends \advanced_testcase {
     private function create_task(string $title, string $description = ''): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_task', (object) [
+        return (int)$DB->insert_record('local_dutydesk_task', (object) [
             'title' => $title,
             'description' => $description,
             'descriptionformat' => FORMAT_HTML,
@@ -185,7 +185,7 @@ final class dashboard_presenter_test extends \advanced_testcase {
     private function assign_task(int $taskid, int $positionid, int $workloadpercent): int {
         global $DB, $USER;
 
-        return (int)$DB->insert_record('dutydesk_taskassignment', (object) [
+        return (int)$DB->insert_record('local_dutydesk_taskassign', (object) [
             'taskid' => $taskid,
             'positionid' => $positionid,
             'workloadpercent' => $workloadpercent,

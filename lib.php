@@ -213,7 +213,7 @@ function local_dutydesk_get_user_position_ids(int $userid): array {
     global $DB;
 
     $primary = $DB->get_fieldset_select(
-        'dutydesk_position',
+        'local_dutydesk_position',
         'id',
         'primaryuserid = ? AND COALESCE(archived, 0) = 0',
         [$userid]
@@ -221,8 +221,8 @@ function local_dutydesk_get_user_position_ids(int $userid): array {
 
     $deputy = $DB->get_fieldset_sql(
         "SELECT da.positionid
-           FROM {dutydesk_position_deputy} da
-           JOIN {dutydesk_position} p ON p.id = da.positionid
+           FROM {local_dutydesk_posdeputy} da
+           JOIN {local_dutydesk_position} p ON p.id = da.positionid
           WHERE da.userid = :userid
             AND COALESCE(p.archived, 0) = 0",
         ['userid' => $userid]
@@ -254,7 +254,7 @@ function local_dutydesk_get_user_department_ids(int $userid): array {
     [$insql, $params] = $DB->get_in_or_equal($positionids, SQL_PARAMS_NAMED);
     $departmentids = $DB->get_fieldset_sql(
         "SELECT DISTINCT departmentid
-           FROM {dutydesk_position}
+           FROM {local_dutydesk_position}
           WHERE id {$insql}
             AND departmentid IS NOT NULL
             AND COALESCE(archived, 0) = 0",
@@ -353,7 +353,7 @@ function local_dutydesk_show_archived_positions_tab(?int $userid = null): bool {
 function local_dutydesk_get_managed_department_ids(int $userid): array {
     global $DB;
 
-    $ids = $DB->get_fieldset_select('dutydesk_department_manager', 'departmentid', 'userid = ?', [$userid]) ?? [];
+    $ids = $DB->get_fieldset_select('local_dutydesk_deptmgr', 'departmentid', 'userid = ?', [$userid]) ?? [];
     $ids = array_map('intval', $ids);
 
     return array_values(array_unique($ids));
@@ -441,7 +441,7 @@ function local_dutydesk_get_manageable_position_ids(int $userid): array {
 
     $context = context_system::instance();
     if (has_capability('local/dutydesk:manageall', $context, $userid)) {
-        $all = $DB->get_fieldset_select('dutydesk_position', 'id', '1 = 1', []);
+        $all = $DB->get_fieldset_select('local_dutydesk_position', 'id', '1 = 1', []);
         return array_map('intval', $all ?? []);
     }
 
@@ -452,7 +452,7 @@ function local_dutydesk_get_manageable_position_ids(int $userid): array {
         if (!empty($manageddepartments)) {
             [$insql, $params] = $DB->get_in_or_equal($manageddepartments, SQL_PARAMS_NAMED);
             $managedpositions = $DB->get_fieldset_sql(
-                "SELECT id FROM {dutydesk_position} WHERE departmentid {$insql}",
+                "SELECT id FROM {local_dutydesk_position} WHERE departmentid {$insql}",
                 $params
             );
             if (!empty($managedpositions)) {
@@ -480,7 +480,7 @@ function local_dutydesk_set_department_managers(int $departmentid, array $manage
         return $value > 0;
     }))));
 
-    $existing = $DB->get_records('dutydesk_department_manager', ['departmentid' => $departmentid], '', 'id, userid');
+    $existing = $DB->get_records('local_dutydesk_deptmgr', ['departmentid' => $departmentid], '', 'id, userid');
     $existingids = array_map(static function ($record) {
         return (int)$record->userid;
     }, $existing ?: []);
@@ -495,13 +495,13 @@ function local_dutydesk_set_department_managers(int $departmentid, array $manage
             'assignedby' => $assignedby,
             'timecreated' => time(),
         ];
-        $DB->insert_record('dutydesk_department_manager', $record);
+        $DB->insert_record('local_dutydesk_deptmgr', $record);
     }
 
     if (!empty($toremove)) {
         [$insql, $params] = $DB->get_in_or_equal($toremove, SQL_PARAMS_NAMED);
         $params['departmentid'] = $departmentid;
-        $DB->delete_records_select('dutydesk_department_manager', "departmentid = :departmentid AND userid {$insql}", $params);
+        $DB->delete_records_select('local_dutydesk_deptmgr', "departmentid = :departmentid AND userid {$insql}", $params);
     }
 }
 
@@ -569,8 +569,8 @@ function local_dutydesk_user_can_view_task(int $taskid, ?int $userid = null): bo
     $context = context_system::instance();
     $assignment = $DB->get_record_sql(
         "SELECT ta.positionid, p.departmentid
-           FROM {dutydesk_taskassignment} ta
-           JOIN {dutydesk_position} p ON p.id = ta.positionid
+           FROM {local_dutydesk_taskassign} ta
+           JOIN {local_dutydesk_position} p ON p.id = ta.positionid
           WHERE ta.taskid = :taskid",
         ['taskid' => $taskid]
     );
@@ -627,8 +627,8 @@ function local_dutydesk_user_can_edit_task(int $taskid, ?int $userid = null): bo
         global $DB;
         $assignment = $DB->get_record_sql(
             "SELECT ta.positionid, p.departmentid
-               FROM {dutydesk_taskassignment} ta
-               JOIN {dutydesk_position} p ON p.id = ta.positionid
+               FROM {local_dutydesk_taskassign} ta
+               JOIN {local_dutydesk_position} p ON p.id = ta.positionid
               WHERE ta.taskid = :taskid",
             ['taskid' => $taskid]
         );
@@ -655,7 +655,7 @@ function local_dutydesk_user_can_edit_task(int $taskid, ?int $userid = null): bo
 function local_dutydesk_user_can_edit_subtask(int $subtaskid, ?int $userid = null): bool {
     global $DB;
 
-    $taskid = $DB->get_field('dutydesk_subtask', 'taskid', ['id' => $subtaskid]);
+    $taskid = $DB->get_field('local_dutydesk_subtask', 'taskid', ['id' => $subtaskid]);
     if (!$taskid) {
         return false;
     }
@@ -688,8 +688,8 @@ function local_dutydesk_user_can_view_task_history(int $taskid, ?int $userid = n
 
     $departmentid = (int)$DB->get_field_sql(
         "SELECT p.departmentid
-           FROM {dutydesk_taskassignment} ta
-           JOIN {dutydesk_position} p ON p.id = ta.positionid
+           FROM {local_dutydesk_taskassign} ta
+           JOIN {local_dutydesk_position} p ON p.id = ta.positionid
           WHERE ta.taskid = :taskid",
         ['taskid' => $taskid]
     );
@@ -723,7 +723,7 @@ function local_dutydesk_user_can_edit_workload(?int $positionid, ?int $userid = 
         return false;
     }
 
-    $departmentid = $DB->get_field('dutydesk_position', 'departmentid', ['id' => $positionid]);
+    $departmentid = $DB->get_field('local_dutydesk_position', 'departmentid', ['id' => $positionid]);
     if (!$departmentid) {
         return false;
     }
@@ -896,7 +896,7 @@ function local_dutydesk_calculate_position_page(
         return null;
     }
 
-    $position = $DB->get_record('dutydesk_position', ['id' => $positionid], 'id, title', IGNORE_MISSING);
+    $position = $DB->get_record('local_dutydesk_position', ['id' => $positionid], 'id, title', IGNORE_MISSING);
     if (!$position) {
         return null;
     }
@@ -910,7 +910,7 @@ function local_dutydesk_calculate_position_page(
     if ($canmanageall) {
         $count = $DB->count_records_sql(
             "SELECT COUNT(1)
-               FROM {dutydesk_position}
+               FROM {local_dutydesk_position}
               WHERE title < :titlelt
                  OR (title = :titleeq AND id < :idlt)",
             $params
@@ -926,7 +926,7 @@ function local_dutydesk_calculate_position_page(
     $params = array_merge($insqlparams, $params);
     $count = $DB->count_records_sql(
         "SELECT COUNT(1)
-           FROM {dutydesk_position}
+           FROM {local_dutydesk_position}
           WHERE id {$insql}
             AND (title < :titlelt OR (title = :titleeq AND id < :idlt))",
         $params
@@ -957,7 +957,7 @@ function local_dutydesk_calculate_department_page(
         return null;
     }
 
-    $department = $DB->get_record('dutydesk_department', ['id' => $departmentid], 'id, name', IGNORE_MISSING);
+    $department = $DB->get_record('local_dutydesk_department', ['id' => $departmentid], 'id, name', IGNORE_MISSING);
     if (!$department) {
         return null;
     }
@@ -971,7 +971,7 @@ function local_dutydesk_calculate_department_page(
     if ($canmanageall) {
         $count = $DB->count_records_sql(
             "SELECT COUNT(1)
-               FROM {dutydesk_department}
+               FROM {local_dutydesk_department}
               WHERE name < :namelt
                  OR (name = :nameeq AND id < :idlt)",
             $params
@@ -987,7 +987,7 @@ function local_dutydesk_calculate_department_page(
     $params = array_merge($insqlparams, $params);
     $count = $DB->count_records_sql(
         "SELECT COUNT(1)
-           FROM {dutydesk_department}
+           FROM {local_dutydesk_department}
           WHERE id {$insql}
             AND (name < :namelt OR (name = :nameeq AND id < :idlt))",
         $params
@@ -1022,7 +1022,7 @@ function local_dutydesk_calculate_task_page(
         return null;
     }
 
-    $task = $DB->get_record('dutydesk_task', ['id' => $taskid], 'id, title', IGNORE_MISSING);
+    $task = $DB->get_record('local_dutydesk_task', ['id' => $taskid], 'id, title', IGNORE_MISSING);
     if (!$task) {
         return null;
     }
@@ -1038,8 +1038,8 @@ function local_dutydesk_calculate_task_page(
             $params['positionidfilter'] = $positionid;
             $count = $DB->count_records_sql(
                 "SELECT COUNT(DISTINCT t.id)
-                   FROM {dutydesk_task} t
-                   JOIN {dutydesk_taskassignment} ta ON ta.taskid = t.id
+                   FROM {local_dutydesk_task} t
+                   JOIN {local_dutydesk_taskassign} ta ON ta.taskid = t.id
                   WHERE ta.positionid = :positionidfilter
                     AND (t.title < :titlelt OR (t.title = :titleeq AND t.id < :idlt))",
                 $params
@@ -1049,7 +1049,7 @@ function local_dutydesk_calculate_task_page(
 
         $count = $DB->count_records_sql(
             "SELECT COUNT(1)
-               FROM {dutydesk_task}
+               FROM {local_dutydesk_task}
               WHERE title < :titlelt
                  OR (title = :titleeq AND id < :idlt)",
             $params
@@ -1082,9 +1082,9 @@ function local_dutydesk_calculate_task_page(
     $positionfiltersql = $positionid > 0 ? ' AND ta.positionid = :positionidfilter' : '';
     $count = $DB->count_records_sql(
         "SELECT COUNT(DISTINCT t.id)
-           FROM {dutydesk_task} t
-           JOIN {dutydesk_taskassignment} ta ON ta.taskid = t.id
-           JOIN {dutydesk_position} p ON p.id = ta.positionid
+           FROM {local_dutydesk_task} t
+           JOIN {local_dutydesk_taskassign} ta ON ta.taskid = t.id
+           JOIN {local_dutydesk_position} p ON p.id = ta.positionid
           WHERE {$condition}{$positionfiltersql}
             AND (t.title < :titlelt OR (t.title = :titleeq AND t.id < :idlt))",
         $params
@@ -1120,7 +1120,7 @@ function local_dutydesk_log_task_history(int $taskid, string $action, string $de
         'timecreated' => time(),
     ];
 
-    $DB->insert_record('dutydesk_task_history', $record);
+    $DB->insert_record('local_dutydesk_taskhist', $record);
 }
 
 /**
@@ -1224,16 +1224,16 @@ function local_dutydesk_build_task_display(
                 deputyuser.lastnamephonetic AS deputylastnamephonetic,
                 deputyuser.idnumber AS deputyidnumber,
                 deputyuser.email AS deputyemail
-           FROM {dutydesk_taskassignment} ta
-      LEFT JOIN {dutydesk_position} p ON p.id = ta.positionid
-      LEFT JOIN {dutydesk_department} d ON d.id = p.departmentid
+           FROM {local_dutydesk_taskassign} ta
+      LEFT JOIN {local_dutydesk_position} p ON p.id = ta.positionid
+      LEFT JOIN {local_dutydesk_department} d ON d.id = p.departmentid
       LEFT JOIN {user} primaryuser ON primaryuser.id = p.primaryuserid
-      LEFT JOIN {dutydesk_position_deputy} deputy ON deputy.positionid = p.id
+      LEFT JOIN {local_dutydesk_posdeputy} deputy ON deputy.positionid = p.id
       LEFT JOIN {user} deputyuser ON deputyuser.id = deputy.userid
           WHERE ta.taskid = :taskid",
         ['taskid' => $task->id]
     );
-    $subtasks = $DB->get_records('dutydesk_subtask', ['taskid' => $task->id], 'sortorder ASC, id ASC');
+    $subtasks = $DB->get_records('local_dutydesk_subtask', ['taskid' => $task->id], 'sortorder ASC, id ASC');
     $fs = get_file_storage();
 
     $primaryuserdisplay = get_string('notassigned', 'local_dutydesk');
@@ -1490,7 +1490,7 @@ function local_dutydesk_get_position_name(int $positionid): string {
         return '';
     }
 
-    $title = $DB->get_field('dutydesk_position', 'title', ['id' => $positionid]);
+    $title = $DB->get_field('local_dutydesk_position', 'title', ['id' => $positionid]);
     if (!$title) {
         return '';
     }
@@ -1524,7 +1524,7 @@ function local_dutydesk_save_task_assignment(
         return;
     }
 
-    $existing = $DB->get_record('dutydesk_taskassignment', ['taskid' => $taskid]);
+    $existing = $DB->get_record('local_dutydesk_taskassign', ['taskid' => $taskid]);
     $hasassignment = $positionid > 0;
     $originalpositionid = $existing ? (int)$existing->positionid : 0;
     $newpositionid = $originalpositionid;
@@ -1552,13 +1552,13 @@ function local_dutydesk_save_task_assignment(
 
         if ($existing) {
             $record->id = $existing->id;
-            $DB->update_record('dutydesk_taskassignment', $record);
+            $DB->update_record('local_dutydesk_taskassign', $record);
         } else {
-            $DB->insert_record('dutydesk_taskassignment', $record);
+            $DB->insert_record('local_dutydesk_taskassign', $record);
         }
         $newpositionid = $record->positionid;
     } else if ($existing) {
-        $DB->delete_records('dutydesk_taskassignment', ['taskid' => $taskid]);
+        $DB->delete_records('local_dutydesk_taskassign', ['taskid' => $taskid]);
         $newpositionid = 0;
     } else {
         $newpositionid = 0;
@@ -1584,7 +1584,7 @@ function local_dutydesk_sync_position_tasks(int $positionid, array $taskids): vo
     }
 
     $taskids = array_values(array_unique(array_filter(array_map('intval', $taskids))));
-    $existing = $DB->get_records_menu('dutydesk_taskassignment', ['positionid' => $positionid], '', 'taskid, taskid');
+    $existing = $DB->get_records_menu('local_dutydesk_taskassign', ['positionid' => $positionid], '', 'taskid, taskid');
     $currenttaskids = array_map('intval', array_keys($existing));
 
     $taskstoassign = array_diff($taskids, $currenttaskids);
@@ -1728,7 +1728,7 @@ function local_dutydesk_pluginfile($course, $cm, $context, $filearea, $args, $fo
             return false;
         }
     } else if ($filearea === 'subtaskdescription' || $filearea === 'subtaskdocuments') {
-        $taskid = (int)$DB->get_field('dutydesk_subtask', 'taskid', ['id' => $itemid]);
+        $taskid = (int)$DB->get_field('local_dutydesk_subtask', 'taskid', ['id' => $itemid]);
         if ($taskid <= 0 || !local_dutydesk_user_can_view_task($taskid)) {
             return false;
         }

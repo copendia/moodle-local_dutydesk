@@ -95,10 +95,10 @@ class form_handler {
         } else if ($id) {
             self::require_manage_department($id, $canmanageall, $manageddepartmentids, $context);
 
-            $record = $DB->get_record('dutydesk_department', ['id' => $id], '*', MUST_EXIST);
+            $record = $DB->get_record('local_dutydesk_department', ['id' => $id], '*', MUST_EXIST);
             if ($canassignmanagers) {
                 $managerids = $DB->get_fieldset_select(
-                    'dutydesk_department_manager',
+                    'local_dutydesk_deptmgr',
                     'userid',
                     'departmentid = ?',
                     [$record->id]
@@ -106,7 +106,7 @@ class form_handler {
                 $record->managerids = !empty($managerids) ? (int)reset($managerids) : 0;
             }
             $record->categoryids = $DB->get_fieldset_select(
-                'dutydesk_category',
+                'local_dutydesk_category',
                 'id',
                 'departmentid = ?',
                 [$record->id]

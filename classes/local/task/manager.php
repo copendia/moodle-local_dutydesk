@@ -43,11 +43,11 @@ class manager {
             return;
         }
 
-        $taskrecord = $DB->get_record('dutydesk_task', ['id' => $taskid]);
+        $taskrecord = $DB->get_record('local_dutydesk_task', ['id' => $taskid]);
         if ($taskrecord) {
             \local_dutydesk_log_task_history((int)$taskrecord->id, 'deleted');
         }
 
-        $DB->delete_records('dutydesk_task', ['id' => $taskid]);
+        $DB->delete_records('local_dutydesk_task', ['id' => $taskid]);
     }
 }

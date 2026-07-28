@@ -336,5 +336,33 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
         upgrade_plugin_savepoint(true, 20250903053, 'local', 'dutydesk');
     }
 
+    if ($oldversion < 20250903054) {
+        $renames = [
+            'dutydesk_department' => 'local_dutydesk_department',
+            'dutydesk_department_manager' => 'local_dutydesk_deptmgr',
+            'dutydesk_position' => 'local_dutydesk_position',
+            'dutydesk_userinfo' => 'local_dutydesk_userinfo',
+            'dutydesk_task' => 'local_dutydesk_task',
+            'dutydesk_subtask' => 'local_dutydesk_subtask',
+            'dutydesk_taskassignment' => 'local_dutydesk_taskassign',
+            'dutydesk_position_deputy' => 'local_dutydesk_posdeputy',
+            'dutydesk_category' => 'local_dutydesk_category',
+            'dutydesk_comment' => 'local_dutydesk_comment',
+            'dutydesk_import' => 'local_dutydesk_import',
+            'dutydesk_task_history' => 'local_dutydesk_taskhist',
+        ];
+
+        foreach ($renames as $oldname => $newname) {
+            $oldtable = new xmldb_table($oldname);
+            $newtable = new xmldb_table($newname);
+
+            if ($dbman->table_exists($oldtable) && !$dbman->table_exists($newtable)) {
+                $dbman->rename_table($oldtable, $newname);
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 20250903054, 'local', 'dutydesk');
+    }
+
     return true;
 }

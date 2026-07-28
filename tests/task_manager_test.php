@@ -53,8 +53,8 @@ final class task_manager_test extends \advanced_testcase {
 
         manager::delete_task($taskid);
 
-        $this->assertFalse($DB->record_exists('dutydesk_task', ['id' => $taskid]));
-        $this->assertTrue($DB->record_exists('dutydesk_task_history', [
+        $this->assertFalse($DB->record_exists('local_dutydesk_task', ['id' => $taskid]));
+        $this->assertTrue($DB->record_exists('local_dutydesk_taskhist', [
             'taskid' => $taskid,
             'action' => 'deleted',
         ]));
@@ -66,13 +66,13 @@ final class task_manager_test extends \advanced_testcase {
     public function test_delete_task_ignores_invalid_id(): void {
         global $DB;
 
-        $taskcount = $DB->count_records('dutydesk_task');
-        $historycount = $DB->count_records('dutydesk_task_history');
+        $taskcount = $DB->count_records('local_dutydesk_task');
+        $historycount = $DB->count_records('local_dutydesk_taskhist');
 
         manager::delete_task(0);
 
-        $this->assertSame($taskcount, $DB->count_records('dutydesk_task'));
-        $this->assertSame($historycount, $DB->count_records('dutydesk_task_history'));
+        $this->assertSame($taskcount, $DB->count_records('local_dutydesk_task'));
+        $this->assertSame($historycount, $DB->count_records('local_dutydesk_taskhist'));
     }
 
     /**
@@ -83,7 +83,7 @@ final class task_manager_test extends \advanced_testcase {
     private function create_task(string $title): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_task', (object) [
+        return (int)$DB->insert_record('local_dutydesk_task', (object) [
             'title' => $title,
             'description' => '',
             'descriptionformat' => FORMAT_HTML,

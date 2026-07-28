@@ -54,51 +54,51 @@ class provider implements
      * @return collection
      */
     public static function get_metadata(collection $collection): collection {
-        $collection->add_database_table('dutydesk_department_manager', [
-            'userid' => 'privacy:metadata:dutydesk_department_manager:userid',
-            'assignedby' => 'privacy:metadata:dutydesk_department_manager:assignedby',
-            'timecreated' => 'privacy:metadata:dutydesk_department_manager:timecreated',
-        ], 'privacy:metadata:dutydesk_department_manager');
+        $collection->add_database_table('local_dutydesk_deptmgr', [
+            'userid' => 'privacy:metadata:local_dutydesk_deptmgr:userid',
+            'assignedby' => 'privacy:metadata:local_dutydesk_deptmgr:assignedby',
+            'timecreated' => 'privacy:metadata:local_dutydesk_deptmgr:timecreated',
+        ], 'privacy:metadata:local_dutydesk_deptmgr');
 
-        $collection->add_database_table('dutydesk_position', [
-            'primaryuserid' => 'privacy:metadata:dutydesk_position:primaryuserid',
-            'archivedtime' => 'privacy:metadata:dutydesk_position:archivedtime',
-        ], 'privacy:metadata:dutydesk_position');
+        $collection->add_database_table('local_dutydesk_position', [
+            'primaryuserid' => 'privacy:metadata:local_dutydesk_position:primaryuserid',
+            'archivedtime' => 'privacy:metadata:local_dutydesk_position:archivedtime',
+        ], 'privacy:metadata:local_dutydesk_position');
 
-        $collection->add_database_table('dutydesk_userinfo', [
-            'userid' => 'privacy:metadata:dutydesk_userinfo:userid',
-            'dutydeskrole' => 'privacy:metadata:dutydesk_userinfo:dutydeskrole',
-        ], 'privacy:metadata:dutydesk_userinfo');
+        $collection->add_database_table('local_dutydesk_userinfo', [
+            'userid' => 'privacy:metadata:local_dutydesk_userinfo:userid',
+            'dutydeskrole' => 'privacy:metadata:local_dutydesk_userinfo:dutydeskrole',
+        ], 'privacy:metadata:local_dutydesk_userinfo');
 
-        $collection->add_database_table('dutydesk_taskassignment', [
-            'assignedby' => 'privacy:metadata:dutydesk_taskassignment:assignedby',
-            'timestamp' => 'privacy:metadata:dutydesk_taskassignment:timestamp',
-        ], 'privacy:metadata:dutydesk_taskassignment');
+        $collection->add_database_table('local_dutydesk_taskassign', [
+            'assignedby' => 'privacy:metadata:local_dutydesk_taskassign:assignedby',
+            'timestamp' => 'privacy:metadata:local_dutydesk_taskassign:timestamp',
+        ], 'privacy:metadata:local_dutydesk_taskassign');
 
-        $collection->add_database_table('dutydesk_position_deputy', [
-            'userid' => 'privacy:metadata:dutydesk_position_deputy:userid',
-            'assignedby' => 'privacy:metadata:dutydesk_position_deputy:assignedby',
-            'timecreated' => 'privacy:metadata:dutydesk_position_deputy:timecreated',
-        ], 'privacy:metadata:dutydesk_position_deputy');
+        $collection->add_database_table('local_dutydesk_posdeputy', [
+            'userid' => 'privacy:metadata:local_dutydesk_posdeputy:userid',
+            'assignedby' => 'privacy:metadata:local_dutydesk_posdeputy:assignedby',
+            'timecreated' => 'privacy:metadata:local_dutydesk_posdeputy:timecreated',
+        ], 'privacy:metadata:local_dutydesk_posdeputy');
 
-        $collection->add_database_table('dutydesk_comment', [
-            'userid' => 'privacy:metadata:dutydesk_comment:userid',
-            'content' => 'privacy:metadata:dutydesk_comment:content',
-            'created' => 'privacy:metadata:dutydesk_comment:created',
-        ], 'privacy:metadata:dutydesk_comment');
+        $collection->add_database_table('local_dutydesk_comment', [
+            'userid' => 'privacy:metadata:local_dutydesk_comment:userid',
+            'content' => 'privacy:metadata:local_dutydesk_comment:content',
+            'created' => 'privacy:metadata:local_dutydesk_comment:created',
+        ], 'privacy:metadata:local_dutydesk_comment');
 
-        $collection->add_database_table('dutydesk_import', [
-            'filename' => 'privacy:metadata:dutydesk_import:filename',
-            'importedby' => 'privacy:metadata:dutydesk_import:importedby',
-            'created' => 'privacy:metadata:dutydesk_import:created',
-        ], 'privacy:metadata:dutydesk_import');
+        $collection->add_database_table('local_dutydesk_import', [
+            'filename' => 'privacy:metadata:local_dutydesk_import:filename',
+            'importedby' => 'privacy:metadata:local_dutydesk_import:importedby',
+            'created' => 'privacy:metadata:local_dutydesk_import:created',
+        ], 'privacy:metadata:local_dutydesk_import');
 
-        $collection->add_database_table('dutydesk_task_history', [
-            'userid' => 'privacy:metadata:dutydesk_task_history:userid',
-            'action' => 'privacy:metadata:dutydesk_task_history:action',
-            'details' => 'privacy:metadata:dutydesk_task_history:details',
-            'timecreated' => 'privacy:metadata:dutydesk_task_history:timecreated',
-        ], 'privacy:metadata:dutydesk_task_history');
+        $collection->add_database_table('local_dutydesk_taskhist', [
+            'userid' => 'privacy:metadata:local_dutydesk_taskhist:userid',
+            'action' => 'privacy:metadata:local_dutydesk_taskhist:action',
+            'details' => 'privacy:metadata:local_dutydesk_taskhist:details',
+            'timecreated' => 'privacy:metadata:local_dutydesk_taskhist:timecreated',
+        ], 'privacy:metadata:local_dutydesk_taskhist');
 
         return $collection;
     }
@@ -150,20 +150,20 @@ class provider implements
             }
 
             $data = (object) [
-                'departmentmanagerassignments' => array_values($DB->get_records('dutydesk_department_manager',
+                'departmentmanagerassignments' => array_values($DB->get_records('local_dutydesk_deptmgr',
                     ['userid' => $userid])),
-                'assigneddepartmentmanagers' => array_values($DB->get_records('dutydesk_department_manager',
+                'assigneddepartmentmanagers' => array_values($DB->get_records('local_dutydesk_deptmgr',
                     ['assignedby' => $userid])),
-                'positions' => array_values($DB->get_records('dutydesk_position', ['primaryuserid' => $userid])),
-                'userinfo' => array_values($DB->get_records('dutydesk_userinfo', ['userid' => $userid])),
-                'taskassignments' => array_values($DB->get_records('dutydesk_taskassignment', ['assignedby' => $userid])),
-                'deputyassignments' => array_values($DB->get_records('dutydesk_position_deputy',
+                'positions' => array_values($DB->get_records('local_dutydesk_position', ['primaryuserid' => $userid])),
+                'userinfo' => array_values($DB->get_records('local_dutydesk_userinfo', ['userid' => $userid])),
+                'taskassignments' => array_values($DB->get_records('local_dutydesk_taskassign', ['assignedby' => $userid])),
+                'deputyassignments' => array_values($DB->get_records('local_dutydesk_posdeputy',
                     ['userid' => $userid])),
-                'assigneddeputies' => array_values($DB->get_records('dutydesk_position_deputy',
+                'assigneddeputies' => array_values($DB->get_records('local_dutydesk_posdeputy',
                     ['assignedby' => $userid])),
-                'comments' => array_values($DB->get_records('dutydesk_comment', ['userid' => $userid])),
-                'imports' => array_values($DB->get_records('dutydesk_import', ['importedby' => $userid])),
-                'taskhistory' => array_values($DB->get_records('dutydesk_task_history', ['userid' => $userid])),
+                'comments' => array_values($DB->get_records('local_dutydesk_comment', ['userid' => $userid])),
+                'imports' => array_values($DB->get_records('local_dutydesk_import', ['importedby' => $userid])),
+                'taskhistory' => array_values($DB->get_records('local_dutydesk_taskhist', ['userid' => $userid])),
             ];
 
             writer::with_context($context)->export_data([get_string('pluginname', 'local_dutydesk')], $data);
@@ -183,14 +183,14 @@ class provider implements
             return;
         }
 
-        $DB->delete_records('dutydesk_department_manager');
-        $DB->set_field('dutydesk_position', 'primaryuserid', null);
-        $DB->delete_records('dutydesk_userinfo');
-        $DB->set_field('dutydesk_taskassignment', 'assignedby', 0);
-        $DB->delete_records('dutydesk_position_deputy');
-        $DB->delete_records('dutydesk_comment');
-        $DB->set_field('dutydesk_import', 'importedby', 0);
-        $DB->set_field('dutydesk_task_history', 'userid', null);
+        $DB->delete_records('local_dutydesk_deptmgr');
+        $DB->set_field('local_dutydesk_position', 'primaryuserid', null);
+        $DB->delete_records('local_dutydesk_userinfo');
+        $DB->set_field('local_dutydesk_taskassign', 'assignedby', 0);
+        $DB->delete_records('local_dutydesk_posdeputy');
+        $DB->delete_records('local_dutydesk_comment');
+        $DB->set_field('local_dutydesk_import', 'importedby', 0);
+        $DB->set_field('local_dutydesk_taskhist', 'userid', null);
     }
 
     /**
@@ -234,16 +234,16 @@ class provider implements
     private static function has_user_data(int $userid): bool {
         global $DB;
 
-        return $DB->record_exists('dutydesk_department_manager', ['userid' => $userid])
-            || $DB->record_exists('dutydesk_department_manager', ['assignedby' => $userid])
-            || $DB->record_exists('dutydesk_position', ['primaryuserid' => $userid])
-            || $DB->record_exists('dutydesk_userinfo', ['userid' => $userid])
-            || $DB->record_exists('dutydesk_taskassignment', ['assignedby' => $userid])
-            || $DB->record_exists('dutydesk_position_deputy', ['userid' => $userid])
-            || $DB->record_exists('dutydesk_position_deputy', ['assignedby' => $userid])
-            || $DB->record_exists('dutydesk_comment', ['userid' => $userid])
-            || $DB->record_exists('dutydesk_import', ['importedby' => $userid])
-            || $DB->record_exists('dutydesk_task_history', ['userid' => $userid]);
+        return $DB->record_exists('local_dutydesk_deptmgr', ['userid' => $userid])
+            || $DB->record_exists('local_dutydesk_deptmgr', ['assignedby' => $userid])
+            || $DB->record_exists('local_dutydesk_position', ['primaryuserid' => $userid])
+            || $DB->record_exists('local_dutydesk_userinfo', ['userid' => $userid])
+            || $DB->record_exists('local_dutydesk_taskassign', ['assignedby' => $userid])
+            || $DB->record_exists('local_dutydesk_posdeputy', ['userid' => $userid])
+            || $DB->record_exists('local_dutydesk_posdeputy', ['assignedby' => $userid])
+            || $DB->record_exists('local_dutydesk_comment', ['userid' => $userid])
+            || $DB->record_exists('local_dutydesk_import', ['importedby' => $userid])
+            || $DB->record_exists('local_dutydesk_taskhist', ['userid' => $userid]);
     }
 
     /**
@@ -253,43 +253,43 @@ class provider implements
      */
     private static function get_userlist_sql(): string {
         return "SELECT userid
-                  FROM {dutydesk_department_manager}
+                  FROM {local_dutydesk_deptmgr}
                  WHERE userid > 0
                 UNION
                 SELECT assignedby AS userid
-                  FROM {dutydesk_department_manager}
+                  FROM {local_dutydesk_deptmgr}
                  WHERE assignedby > 0
                 UNION
                 SELECT primaryuserid AS userid
-                  FROM {dutydesk_position}
+                  FROM {local_dutydesk_position}
                  WHERE primaryuserid > 0
                 UNION
                 SELECT userid
-                  FROM {dutydesk_userinfo}
+                  FROM {local_dutydesk_userinfo}
                  WHERE userid > 0
                 UNION
                 SELECT assignedby AS userid
-                  FROM {dutydesk_taskassignment}
+                  FROM {local_dutydesk_taskassign}
                  WHERE assignedby > 0
                 UNION
                 SELECT userid
-                  FROM {dutydesk_position_deputy}
+                  FROM {local_dutydesk_posdeputy}
                  WHERE userid > 0
                 UNION
                 SELECT assignedby AS userid
-                  FROM {dutydesk_position_deputy}
+                  FROM {local_dutydesk_posdeputy}
                  WHERE assignedby > 0
                 UNION
                 SELECT userid
-                  FROM {dutydesk_comment}
+                  FROM {local_dutydesk_comment}
                  WHERE userid > 0
                 UNION
                 SELECT importedby AS userid
-                  FROM {dutydesk_import}
+                  FROM {local_dutydesk_import}
                  WHERE importedby > 0
                 UNION
                 SELECT userid
-                  FROM {dutydesk_task_history}
+                  FROM {local_dutydesk_taskhist}
                  WHERE userid > 0";
     }
 
@@ -302,15 +302,15 @@ class provider implements
     private static function delete_user_records(int $userid): void {
         global $DB;
 
-        $DB->delete_records('dutydesk_department_manager', ['userid' => $userid]);
-        $DB->set_field('dutydesk_department_manager', 'assignedby', 0, ['assignedby' => $userid]);
-        $DB->set_field('dutydesk_position', 'primaryuserid', null, ['primaryuserid' => $userid]);
-        $DB->delete_records('dutydesk_userinfo', ['userid' => $userid]);
-        $DB->set_field('dutydesk_taskassignment', 'assignedby', 0, ['assignedby' => $userid]);
-        $DB->delete_records('dutydesk_position_deputy', ['userid' => $userid]);
-        $DB->set_field('dutydesk_position_deputy', 'assignedby', 0, ['assignedby' => $userid]);
-        $DB->delete_records('dutydesk_comment', ['userid' => $userid]);
-        $DB->set_field('dutydesk_import', 'importedby', 0, ['importedby' => $userid]);
-        $DB->set_field('dutydesk_task_history', 'userid', null, ['userid' => $userid]);
+        $DB->delete_records('local_dutydesk_deptmgr', ['userid' => $userid]);
+        $DB->set_field('local_dutydesk_deptmgr', 'assignedby', 0, ['assignedby' => $userid]);
+        $DB->set_field('local_dutydesk_position', 'primaryuserid', null, ['primaryuserid' => $userid]);
+        $DB->delete_records('local_dutydesk_userinfo', ['userid' => $userid]);
+        $DB->set_field('local_dutydesk_taskassign', 'assignedby', 0, ['assignedby' => $userid]);
+        $DB->delete_records('local_dutydesk_posdeputy', ['userid' => $userid]);
+        $DB->set_field('local_dutydesk_posdeputy', 'assignedby', 0, ['assignedby' => $userid]);
+        $DB->delete_records('local_dutydesk_comment', ['userid' => $userid]);
+        $DB->set_field('local_dutydesk_import', 'importedby', 0, ['importedby' => $userid]);
+        $DB->set_field('local_dutydesk_taskhist', 'userid', null, ['userid' => $userid]);
     }
 }

@@ -39,7 +39,7 @@ if ($taskid <= 0) {
     throw new invalid_parameter_exception('Invalid task id');
 }
 
-$task = $DB->get_record('dutydesk_task', ['id' => $taskid], 'id, title', MUST_EXIST);
+$task = $DB->get_record('local_dutydesk_task', ['id' => $taskid], 'id, title', MUST_EXIST);
 
 if (!local_dutydesk_user_can_view_task_history($taskid)) {
     throw new required_capability_exception($context, 'local/dutydesk:managepositions', 'nopermissions', 'local_dutydesk');
@@ -49,7 +49,7 @@ $canviewfullnames = has_capability('moodle/site:viewfullnames', $context);
 $historyrecords = $DB->get_records_sql(
     "SELECT h.*, u.firstname, u.lastname, u.middlename, u.alternatename,
             u.firstnamephonetic, u.lastnamephonetic
-       FROM {dutydesk_task_history} h
+       FROM {local_dutydesk_taskhist} h
   LEFT JOIN {user} u ON u.id = h.userid
       WHERE h.taskid = :taskid
    ORDER BY h.timecreated DESC",

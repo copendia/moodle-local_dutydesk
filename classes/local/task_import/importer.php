@@ -43,7 +43,7 @@ class importer {
     public static function get_department_options(): array {
         global $DB;
 
-        $departmentrecords = $DB->get_records('dutydesk_department', null, 'name ASC', 'id, name');
+        $departmentrecords = $DB->get_records('local_dutydesk_department', null, 'name ASC', 'id, name');
         $departmentoptions = [];
         foreach ($departmentrecords as $department) {
             $departmentoptions[(int)$department->id] = format_string($department->name);
@@ -233,7 +233,7 @@ class importer {
     public static function find_warnings(array $items): array {
         global $DB;
 
-        $existingtasks = $DB->get_records('dutydesk_task', null, '', 'id, title');
+        $existingtasks = $DB->get_records('local_dutydesk_task', null, '', 'id, title');
         $warnings = [];
 
         foreach ($items as $index => $item) {
@@ -273,7 +273,7 @@ class importer {
     public static function commit(array $items, int $departmentid): array {
         global $DB;
 
-        if (!$DB->record_exists('dutydesk_department', ['id' => $departmentid])) {
+        if (!$DB->record_exists('local_dutydesk_department', ['id' => $departmentid])) {
             throw new \moodle_exception('invaliddepartment', 'local_dutydesk');
         }
 
@@ -285,7 +285,7 @@ class importer {
         foreach ($items as $item) {
             $categorykey = self::normalize($item['category']);
             if (!isset($categorymap[$categorykey])) {
-                $categoryid = $DB->insert_record('dutydesk_category', [
+                $categoryid = $DB->insert_record('local_dutydesk_category', [
                     'name' => $item['category'],
                     'departmentid' => $departmentid,
                 ]);
@@ -293,7 +293,7 @@ class importer {
                 $createdcategories++;
             }
 
-            $taskid = $DB->insert_record('dutydesk_task', [
+            $taskid = $DB->insert_record('local_dutydesk_task', [
                 'title' => $item['title'],
                 'description' => '',
                 'descriptionformat' => FORMAT_HTML,
@@ -321,7 +321,7 @@ class importer {
         global $DB;
 
         $categoryrecords = $DB->get_records_select(
-            'dutydesk_category',
+            'local_dutydesk_category',
             'departmentid = :departmentid OR departmentid IS NULL',
             ['departmentid' => $departmentid],
             'departmentid DESC, name ASC',
@@ -346,7 +346,7 @@ class importer {
             if (isset($categorymap[$categorykey])) {
                 continue;
             }
-            $DB->set_field('dutydesk_category', 'departmentid', $departmentid, ['id' => $categoryid]);
+            $DB->set_field('local_dutydesk_category', 'departmentid', $departmentid, ['id' => $categoryid]);
             $categorymap[$categorykey] = $categoryid;
         }
 
