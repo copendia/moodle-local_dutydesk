@@ -1,0 +1,46 @@
+services:
+  moodle:
+    build:
+      context: .
+      dockerfile: docker/moodle45/Dockerfile
+      args:
+        MOODLE_BRANCH: MOODLE_405_STABLE
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MOODLE_URL: http://localhost:8085
+      MOODLE_DB_HOST: db
+      MOODLE_DB_NAME: moodle
+      MOODLE_DB_USER: moodle
+      MOODLE_DB_PASS: moodle
+      MOODLE_ADMIN_USER: admin
+      MOODLE_ADMIN_PASS: Admin123!
+      MOODLE_ADMIN_EMAIL: admin@example.test
+    ports:
+      - "8085:80"
+    volumes:
+      - moodledata:/var/www/moodledata
+
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_DATABASE: moodle
+      MARIADB_USER: moodle
+      MARIADB_PASSWORD: moodle
+      MARIADB_ROOT_PASSWORD: root
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --innodb_file_per_table=1
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  moodledata:
+  dbdata:
