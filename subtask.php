@@ -74,7 +74,7 @@ if (
 }
 
 if ($id) {
-    $subtask = $DB->get_record('dutydesk_subtask', ['id' => $id], '*', MUST_EXIST);
+    $subtask = $DB->get_record('local_dutydesk_subtask', ['id' => $id], '*', MUST_EXIST);
     $taskid = $subtask->taskid;
 } else {
     $subtask = null;
@@ -84,7 +84,7 @@ if (!$taskid) {
     throw new moodle_exception('missingparam', 'error', '', 'taskid');
 }
 
-$task = $DB->get_record('dutydesk_task', ['id' => $taskid], '*', MUST_EXIST);
+$task = $DB->get_record('local_dutydesk_task', ['id' => $taskid], '*', MUST_EXIST);
 
 if (!$canmanageall && !local_dutydesk_user_can_edit_task($taskid)) {
     throw new required_capability_exception(
@@ -174,7 +174,7 @@ if ($ispost && $delete && $id && confirm_sesskey()) {
         $detail = get_string('taskhistory_detail_subtask_reference', 'local_dutydesk', format_string($subtask->title ?? ''));
         local_dutydesk_log_task_history((int)$subtask->taskid, 'subtask_deleted', $detail);
     }
-    $DB->delete_records('dutydesk_subtask', ['id' => $id]);
+    $DB->delete_records('local_dutydesk_subtask', ['id' => $id]);
     if ($ismodal) {
         local_dutydesk_close_modal_and_exit();
     } else {
@@ -238,7 +238,7 @@ if ($data = $form->get_data()) {
         );
         $record->description = $data->description;
         $record->descriptionformat = $data->descriptionformat;
-        $DB->update_record('dutydesk_subtask', $record);
+        $DB->update_record('local_dutydesk_subtask', $record);
         file_save_draft_area_files(
             $data->documents_filemanager ?? 0,
             $context->id,
@@ -270,13 +270,13 @@ if ($data = $form->get_data()) {
         }
     } else {
         $maxorder = (int)$DB->get_field_sql(
-            'SELECT MAX(sortorder) FROM {dutydesk_subtask} WHERE taskid = :taskid',
+            'SELECT MAX(sortorder) FROM {local_dutydesk_subtask} WHERE taskid = :taskid',
             ['taskid' => $taskid]
         );
         $record->sortorder = $maxorder + 1;
         $record->description = $data->description_editor['text'];
         $record->descriptionformat = $data->description_editor['format'];
-        $subtaskid = $DB->insert_record('dutydesk_subtask', $record);
+        $subtaskid = $DB->insert_record('local_dutydesk_subtask', $record);
         $data->id = $subtaskid;
         $data = file_postupdate_standard_editor(
             $data,
@@ -287,7 +287,7 @@ if ($data = $form->get_data()) {
             'subtaskdescription',
             $subtaskid
         );
-        $DB->update_record('dutydesk_subtask', [
+        $DB->update_record('local_dutydesk_subtask', [
             'id' => $subtaskid,
             'description' => $data->description,
             'descriptionformat' => $data->descriptionformat,

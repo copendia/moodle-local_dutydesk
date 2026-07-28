@@ -50,15 +50,15 @@ class repository {
         $totaldepartments = 0;
 
         if ($canmanageall) {
-            $totaldepartments = $DB->count_records('dutydesk_department');
+            $totaldepartments = $DB->count_records('local_dutydesk_department');
             if ($totaldepartments > 0) {
-                $records = $DB->get_records('dutydesk_department', null, 'name ASC, id ASC', '*', $offset, $perpage);
+                $records = $DB->get_records('local_dutydesk_department', null, 'name ASC, id ASC', '*', $offset, $perpage);
             }
         } else if (!empty($manageddepartmentids)) {
             $totaldepartments = count($manageddepartmentids);
             [$insql, $params] = $DB->get_in_or_equal($manageddepartmentids, SQL_PARAMS_NAMED);
             $records = $DB->get_records_select(
-                'dutydesk_department',
+                'local_dutydesk_department',
                 "id {$insql}",
                 $params,
                 'name ASC, id ASC',
@@ -96,7 +96,7 @@ class repository {
         [$insql, $params] = $DB->get_in_or_equal($departmentids, SQL_PARAMS_NAMED);
         $positionrecords = $DB->get_records_sql(
             "SELECT p.id, p.title, p.departmentid
-               FROM {dutydesk_position} p
+               FROM {local_dutydesk_position} p
               WHERE p.departmentid {$insql}
            ORDER BY p.title ASC",
             $params
@@ -129,7 +129,7 @@ class repository {
         $managerrecords = $DB->get_records_sql(
             "SELECT dm.departmentid, u.id, u.firstname, u.lastname, u.middlename,
                     u.alternatename, u.firstnamephonetic, u.lastnamephonetic
-               FROM {dutydesk_department_manager} dm
+               FROM {local_dutydesk_deptmgr} dm
                JOIN {user} u ON u.id = dm.userid
               WHERE dm.departmentid {$insql}
            ORDER BY u.lastname ASC, u.firstname ASC",

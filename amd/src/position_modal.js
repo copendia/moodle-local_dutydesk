@@ -1,6 +1,6 @@
 define(['core/modal_factory', 'core/modal_events', 'core/notification'], function(ModalFactory, ModalEvents, Notification) {
-    const closeMessageType = 'local_dutydesk_close_modal';
-    const selectors = {
+    var closeMessageType = 'local_dutydesk_close_modal';
+    var selectors = {
         trigger: [
             '[data-action="new-position"]',
             '[data-action="edit-position"]',
@@ -10,27 +10,27 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         cancel: 'button[name="cancel"], input[name="cancel"]',
     };
 
-    const buildIframeHtml = function(url, title, height) {
-        const safeTitle = title || '';
+    var buildIframeHtml = function(url, title, height) {
+        var safeTitle = title || '';
         return '<iframe src="' + url + '" title="' + safeTitle.replace(/"/g, '&quot;') + '" '
             + 'style="width:100%; height:' + height + '; border:0;" loading="lazy"></iframe>';
     };
 
-    const reloadWithFocus = function() {
-        const target = window.localDutyDeskModalFocusTarget;
+    var reloadWithFocus = function() {
+        var target = window.localDutyDeskModalFocusTarget;
         if (!target || !target.id) {
             window.location.reload();
             return;
         }
 
-        const url = new URL(window.location.href);
+        var url = new URL(window.location.href);
         url.searchParams.set('focus', target.id);
         url.searchParams.set('modalreload', Date.now().toString());
         url.hash = 'position-' + target.id;
         window.location.href = url.toString();
     };
 
-    const registerCloseListener = function() {
+    var registerCloseListener = function() {
         if (window.localDutyDeskModalCloseListenerInitialised) {
             return;
         }
@@ -48,22 +48,22 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         });
     };
 
-    const openModal = function(trigger) {
+    var openModal = function(trigger) {
         if (!trigger) {
             return;
         }
 
-        const url = trigger.dataset.modalUrl || trigger.getAttribute('href');
+        var url = trigger.dataset.modalUrl || trigger.getAttribute('href');
         if (!url) {
             return;
         }
 
-        const title = trigger.dataset.modalTitle || trigger.textContent.trim();
-        const isPositionEdit = trigger.dataset.action === 'edit-position'
+        var title = trigger.dataset.modalTitle || trigger.textContent.trim();
+        var isPositionEdit = trigger.dataset.action === 'edit-position'
             || trigger.getAttribute('data-action') === 'edit-position';
-        const iframeHeight = isPositionEdit ? '78vh' : '84vh';
-        const positionCard = trigger.closest('[id^="position-"]');
-        const positionId = positionCard ? String(positionCard.id).replace(/^position-/, '') : '';
+        var iframeHeight = isPositionEdit ? '78vh' : '84vh';
+        var positionCard = trigger.closest('[id^="position-"]');
+        var positionId = positionCard ? String(positionCard.id).replace(/^position-/, '') : '';
         window.localDutyDeskModalFocusTarget = positionId
             ? {type: 'position', id: positionId}
             : null;
@@ -89,7 +89,7 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         }).catch(Notification.exception);
     };
 
-    const closeParentModal = function() {
+    var closeParentModal = function() {
         if (window.top === window || !window.parent) {
             return;
         }
@@ -101,14 +101,14 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         }
     };
 
-    const initParent = function() {
+    var initParent = function() {
         if (document.body.dataset.positionModalParentInitialised) {
             return;
         }
         document.body.dataset.positionModalParentInitialised = '1';
         registerCloseListener();
         document.addEventListener('click', function(event) {
-            const trigger = event.target.closest(selectors.trigger);
+            var trigger = event.target.closest(selectors.trigger);
             if (!trigger) {
                 return;
             }
@@ -117,14 +117,14 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         });
     };
 
-    const initEmbedded = function() {
+    var initEmbedded = function() {
         if (document.body.dataset.positionModalEmbeddedInitialised) {
             return;
         }
         document.body.dataset.positionModalEmbeddedInitialised = '1';
 
         document.addEventListener('click', function(event) {
-            const trigger = event.target.closest(selectors.cancel);
+            var trigger = event.target.closest(selectors.cancel);
             if (!trigger) {
                 return;
             }
@@ -133,7 +133,7 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         });
 
         document.addEventListener('submit', function(event) {
-            const submitter = event.submitter || document.activeElement;
+            var submitter = event.submitter || document.activeElement;
             if (!submitter || submitter.name !== 'cancel') {
                 return;
             }

@@ -1,12 +1,8 @@
 name: DutyDesk CI
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
+  pull_request: {}
+  push: {}
 
 concurrency:
   group: dutydesk-ci-${{ github.ref }}
@@ -14,26 +10,33 @@ concurrency:
 
 jobs:
   moodle-plugin-ci:
-    name: Moodle ${{ matrix.moodle }} / PHP ${{ matrix.php }}
+    name: Moodle ${{ matrix.moodle }} / PHP ${{ matrix.php }} / ${{ matrix.db }}
     runs-on: ubuntu-22.04
 
     strategy:
       fail-fast: false
       matrix:
         include:
-          - moodle: MOODLE_401_STABLE
-            php: '8.1'
-            node: '16'
           - moodle: MOODLE_405_STABLE
             php: '8.3'
             node: '22'
+            db: mysqli
+            dbname: moodle_405_mysql
+            dbuser: root
+            dbpass: ''
+          - moodle: MOODLE_405_STABLE
+            php: '8.3'
+            node: '22'
+            db: pgsql
+            dbname: moodle_405_pgsql
+            dbuser: moodle
+            dbpass: moodle
 
     services:
       mysql:
         image: mysql:8.0
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_DATABASE: moodle
         ports:
           - 3306:3306
         options: >-
@@ -41,17 +44,30 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: moodle
+          POSTGRES_PASSWORD: moodle
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U moodle"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     env:
-      DB: mysqli
+      DB: ${{ matrix.db }}
       DB_HOST: 127.0.0.1
-      DB_NAME: moodle
-      DB_USER: root
-      DB_PASS: ''
+      DB_NAME: ${{ matrix.dbname }}
+      DB_USER: ${{ matrix.dbuser }}
+      DB_PASS: ${{ matrix.dbpass }}
       MOODLE_BRANCH: ${{ matrix.moodle }}
-      MOODLE_DIR: ${{ github.workspace }}/moodle-ci
+      CI_DIR: /tmp/moodle-plugin-ci
+      MOODLE_DIR: /tmp/moodle-ci
       PLUGIN_DIR: ${{ github.workspace }}
-      INSTALLED_PLUGIN_DIR: ${{ github.workspace }}/moodle-ci/local/dutydesk
+      INSTALLED_PLUGIN_DIR: /tmp/moodle-ci/local/dutydesk
 
     steps:
       - name: Checkout repository
@@ -69,8 +85,9 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: >
             ctype, curl, dom, exif, fileinfo, gd, hash, iconv, intl, json,
-            mbstring, mysqli, openssl, pcre, simplexml, soap, sodium, spl,
+            mbstring, mysqli, pgsql, openssl, pcre, simplexml, soap, sodium, spl,
             tokenizer, xml, xmlreader, zip, zlib
+          ini-values: max_input_vars=5000
           coverage: none
           tools: composer:v2
 
@@ -80,11 +97,11 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Install Moodle Plugin CI
-        run: composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
+        run: composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci "$CI_DIR" ^4
 
       - name: Install Moodle test site
         run: >
-          ci/bin/moodle-plugin-ci install
+          "$CI_DIR/bin/moodle-plugin-ci" install
           --moodle="$MOODLE_DIR"
           --plugin="$PLUGIN_DIR"
           --db-type="$DB"
@@ -93,24 +110,36 @@ jobs:
           --db-user="$DB_USER"
           --db-pass="$DB_PASS"
           --branch="$MOODLE_BRANCH"
+          --no-init
 
       - name: PHP lint
-        run: ci/bin/moodle-plugin-ci phplint "$INSTALLED_PLUGIN_DIR"
+        run: >
+          "$CI_DIR/bin/moodle-plugin-ci" phplint "$INSTALLED_PLUGIN_DIR"
 
       - name: Plugin validation
-        run: ci/bin/moodle-plugin-ci validate "$INSTALLED_PLUGIN_DIR"
+        run: >
+          "$CI_DIR/bin/moodle-plugin-ci" validate "$INSTALLED_PLUGIN_DIR"
 
       - name: Upgrade savepoints
-        run: ci/bin/moodle-plugin-ci savepoints "$INSTALLED_PLUGIN_DIR"
+        run: >
+          "$CI_DIR/bin/moodle-plugin-ci" savepoints "$INSTALLED_PLUGIN_DIR"
 
       - name: Moodle codechecker
-        run: ci/bin/moodle-plugin-ci codechecker "$INSTALLED_PLUGIN_DIR"
+        run: >
+          "$CI_DIR/bin/moodle-plugin-ci" codechecker "$INSTALLED_PLUGIN_DIR"
 
       - name: Mustache lint
-        run: ci/bin/moodle-plugin-ci mustache "$INSTALLED_PLUGIN_DIR"
+        run: >
+          "$CI_DIR/bin/moodle-plugin-ci" mustache "$INSTALLED_PLUGIN_DIR"
 
       - name: AMD lint and build check
-        run: ci/bin/moodle-plugin-ci grunt --moodle="$MOODLE_DIR" --tasks=amd "$INSTALLED_PLUGIN_DIR"
+        run: >
+          "$CI_DIR/bin/moodle-plugin-ci" grunt --moodle="$MOODLE_DIR" --tasks=amd "$INSTALLED_PLUGIN_DIR"
+
+      - name: Initialise PHPUnit test site
+        run: >
+          php "$MOODLE_DIR/admin/tool/phpunit/cli/init.php" --disable-composer
 
       - name: PHPUnit
-        run: ci/bin/moodle-plugin-ci phpunit --moodle="$MOODLE_DIR" "$INSTALLED_PLUGIN_DIR"
+        run: >
+          "$CI_DIR/bin/moodle-plugin-ci" phpunit --moodle="$MOODLE_DIR" "$INSTALLED_PLUGIN_DIR"

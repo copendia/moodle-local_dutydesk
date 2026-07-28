@@ -161,10 +161,12 @@ final class task_import_importer_test extends \advanced_testcase {
 
         $this->assertSame(2, $result['tasks']);
         $this->assertSame(1, $result['categories']);
-        $this->assertSame($departmentid, (int)$DB->get_field('dutydesk_category', 'departmentid', ['id' => $legacycategoryid]));
+        $this->assertSame($departmentid, (int)$DB->get_field('local_dutydesk_category', 'departmentid', [
+            'id' => $legacycategoryid,
+        ]));
 
-        $firsttask = $DB->get_record('dutydesk_task', ['title' => 'Posteingang fachlich bewerten'], '*', MUST_EXIST);
-        $secondtask = $DB->get_record('dutydesk_task', ['title' => 'Rueckmeldung erstellen'], '*', MUST_EXIST);
+        $firsttask = $DB->get_record('local_dutydesk_task', ['title' => 'Posteingang fachlich bewerten'], '*', MUST_EXIST);
+        $secondtask = $DB->get_record('local_dutydesk_task', ['title' => 'Rueckmeldung erstellen'], '*', MUST_EXIST);
         foreach ([$firsttask, $secondtask] as $task) {
             $this->assertSame(1, (int)$task->active);
             $this->assertNotEmpty($task->categoryid);
@@ -191,7 +193,7 @@ final class task_import_importer_test extends \advanced_testcase {
         $this->assertSame(1, $result['tasks']);
         $this->assertSame(0, $result['categories']);
 
-        $task = $DB->get_record('dutydesk_task', ['title' => 'Posteingang fachlich bewerten'], '*', MUST_EXIST);
+        $task = $DB->get_record('local_dutydesk_task', ['title' => 'Posteingang fachlich bewerten'], '*', MUST_EXIST);
         $this->assertSame($categoryid, (int)$task->categoryid);
     }
 
@@ -215,12 +217,12 @@ final class task_import_importer_test extends \advanced_testcase {
 
         $this->assertSame(1, $result['tasks']);
         $this->assertSame(1, $result['categories']);
-        $this->assertSame($otherdepartmentid, (int)$DB->get_field('dutydesk_category', 'departmentid', [
+        $this->assertSame($otherdepartmentid, (int)$DB->get_field('local_dutydesk_category', 'departmentid', [
             'id' => $othercategoryid,
         ]));
 
-        $task = $DB->get_record('dutydesk_task', ['title' => 'Posteingang fachlich bewerten'], '*', MUST_EXIST);
-        $category = $DB->get_record('dutydesk_category', ['id' => $task->categoryid], '*', MUST_EXIST);
+        $task = $DB->get_record('local_dutydesk_task', ['title' => 'Posteingang fachlich bewerten'], '*', MUST_EXIST);
+        $category = $DB->get_record('local_dutydesk_category', ['id' => $task->categoryid], '*', MUST_EXIST);
         $this->assertSame('Organisation', $category->name);
         $this->assertSame($departmentid, (int)$category->departmentid);
         $this->assertNotEquals($othercategoryid, (int)$category->id);
@@ -234,7 +236,7 @@ final class task_import_importer_test extends \advanced_testcase {
     private function create_department(string $name): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_department', (object) [
+        return (int)$DB->insert_record('local_dutydesk_department', (object) [
             'name' => $name,
             'description' => '',
             'timestamp' => time(),
@@ -249,7 +251,7 @@ final class task_import_importer_test extends \advanced_testcase {
     private function create_category(string $name, ?int $departmentid = null): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_category', (object) [
+        return (int)$DB->insert_record('local_dutydesk_category', (object) [
             'name' => $name,
             'departmentid' => $departmentid,
         ]);
@@ -263,7 +265,7 @@ final class task_import_importer_test extends \advanced_testcase {
     private function create_task(string $title): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_task', (object) [
+        return (int)$DB->insert_record('local_dutydesk_task', (object) [
             'title' => $title,
             'description' => '',
             'descriptionformat' => FORMAT_HTML,

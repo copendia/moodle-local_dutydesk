@@ -99,7 +99,7 @@ final class department_repository_presenter_test extends \advanced_testcase {
         $positionid = $this->create_position($departmentid, 'Grouped position');
         $this->create_position($otherdepartmentid, 'Other position');
         $manageruser = $this->getDataGenerator()->create_user();
-        $DB->insert_record('dutydesk_department_manager', (object) [
+        $DB->insert_record('local_dutydesk_deptmgr', (object) [
             'departmentid' => $departmentid,
             'userid' => $manageruser->id,
             'assignedby' => $manageruser->id,
@@ -126,14 +126,14 @@ final class department_repository_presenter_test extends \advanced_testcase {
             'firstname' => 'Dana',
             'lastname' => 'Manager',
         ]);
-        $DB->insert_record('dutydesk_department_manager', (object) [
+        $DB->insert_record('local_dutydesk_deptmgr', (object) [
             'departmentid' => $departmentid,
             'userid' => $manageruser->id,
             'assignedby' => $manageruser->id,
             'timecreated' => time(),
         ]);
 
-        $department = $DB->get_record('dutydesk_department', ['id' => $departmentid], '*', MUST_EXIST);
+        $department = $DB->get_record('local_dutydesk_department', ['id' => $departmentid], '*', MUST_EXIST);
         $data = presenter::build(
             [$departmentid => $department],
             $context,
@@ -162,7 +162,7 @@ final class department_repository_presenter_test extends \advanced_testcase {
     private function create_department(string $name, string $description = ''): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_department', (object) [
+        return (int)$DB->insert_record('local_dutydesk_department', (object) [
             'name' => $name,
             'description' => $description,
             'timestamp' => time(),
@@ -177,7 +177,7 @@ final class department_repository_presenter_test extends \advanced_testcase {
     private function create_position(int $departmentid, string $title): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_position', (object) [
+        return (int)$DB->insert_record('local_dutydesk_position', (object) [
             'title' => $title,
             'positiontype' => LOCAL_DUTYDESK_POSITION_TYPE_POSITION,
             'departmentid' => $departmentid,

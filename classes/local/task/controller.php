@@ -267,7 +267,7 @@ class controller {
             $existingtask = null;
             $beforedocsnapshot = [];
             if (!empty($data->id)) {
-                $existingtask = $DB->get_record('dutydesk_task', ['id' => $data->id]);
+                $existingtask = $DB->get_record('local_dutydesk_task', ['id' => $data->id]);
                 $beforedocsnapshot = local_dutydesk_get_task_document_snapshot($context->id, (int)$data->id);
                 if ($existingtask && !$canedittitle) {
                     // Keep the original title for users that are not allowed to edit it.
@@ -288,7 +288,7 @@ class controller {
                 );
                 $record->description = $data->description;
                 $record->descriptionformat = $data->descriptionformat;
-                $DB->update_record('dutydesk_task', $record);
+                $DB->update_record('local_dutydesk_task', $record);
                 file_save_draft_area_files(
                     $data->documents_filemanager ?? 0,
                     $context->id,
@@ -330,7 +330,7 @@ class controller {
             } else {
                 $record->description = $data->description_editor['text'];
                 $record->descriptionformat = $data->description_editor['format'];
-                $taskid = $DB->insert_record('dutydesk_task', $record);
+                $taskid = $DB->insert_record('local_dutydesk_task', $record);
                 $data->id = $taskid;
                 $data = file_postupdate_standard_editor(
                     $data,
@@ -341,7 +341,7 @@ class controller {
                     'taskdescription',
                     $taskid
                 );
-                $DB->update_record('dutydesk_task', [
+                $DB->update_record('local_dutydesk_task', [
                     'id' => $taskid,
                     'description' => $data->description,
                     'descriptionformat' => $data->descriptionformat,
@@ -457,7 +457,7 @@ class controller {
                         ),
                         'mb-4'
                     );
-                    $previewrecord = $DB->get_record('dutydesk_task', ['id' => $id]);
+                    $previewrecord = $DB->get_record('local_dutydesk_task', ['id' => $id]);
                     if ($previewrecord) {
                         $previewdata = local_dutydesk_build_task_display(
                             $previewrecord,
@@ -565,21 +565,21 @@ class controller {
                 );
                 $filters[] = $searchsql;
                 $params = array_merge($params, $searchparams);
-                $searchjoins = " LEFT JOIN {dutydesk_taskassignment} searchta ON searchta.taskid = t.id
-                         LEFT JOIN {dutydesk_position} searchp ON searchp.id = searchta.positionid
-                         LEFT JOIN {dutydesk_department} searchd ON searchd.id = searchp.departmentid
+                $searchjoins = " LEFT JOIN {local_dutydesk_taskassign} searchta ON searchta.taskid = t.id
+                         LEFT JOIN {local_dutydesk_position} searchp ON searchp.id = searchta.positionid
+                         LEFT JOIN {local_dutydesk_department} searchd ON searchd.id = searchp.departmentid
                          LEFT JOIN {user} searchprimary ON searchprimary.id = searchp.primaryuserid
-                         LEFT JOIN {dutydesk_position_deputy} searchdeputyassign ON searchdeputyassign.positionid = searchp.id
+                         LEFT JOIN {local_dutydesk_posdeputy} searchdeputyassign ON searchdeputyassign.positionid = searchp.id
                          LEFT JOIN {user} searchdeputy ON searchdeputy.id = searchdeputyassign.userid";
                 $whereclause = 'WHERE ' . implode(' AND ', $filters);
                 $countsql = "SELECT COUNT(DISTINCT t.id)
-                       FROM {dutydesk_task} t
+                       FROM {local_dutydesk_task} t
                        {$searchjoins}
                        {$whereclause}";
                 $totaltasks = (int)$DB->count_records_sql($countsql, $params);
                 if ($totaltasks > 0) {
                     $tasksdatasql = "SELECT DISTINCT t.*, COALESCE(searchp.isvacant, 0) AS vacant_sort
-                               FROM {dutydesk_task} t
+                               FROM {local_dutydesk_task} t
                                {$searchjoins}
                                {$whereclause}
                            ORDER BY vacant_sort DESC, t.title ASC, t.id ASC";
@@ -632,21 +632,21 @@ class controller {
                     );
                     $filters[] = $restrictedsearchsql;
                     $params = array_merge($params, $restrictedsearchparams);
-                    $joins = " JOIN {dutydesk_taskassignment} ta ON ta.taskid = t.id
-                       JOIN {dutydesk_position} p ON p.id = ta.positionid
-                  LEFT JOIN {dutydesk_department} d ON d.id = p.departmentid
+                    $joins = " JOIN {local_dutydesk_taskassign} ta ON ta.taskid = t.id
+                       JOIN {local_dutydesk_position} p ON p.id = ta.positionid
+                  LEFT JOIN {local_dutydesk_department} d ON d.id = p.departmentid
                   LEFT JOIN {user} primaryuser ON primaryuser.id = p.primaryuserid
-                  LEFT JOIN {dutydesk_position_deputy} deputy ON deputy.positionid = p.id
+                  LEFT JOIN {local_dutydesk_posdeputy} deputy ON deputy.positionid = p.id
                   LEFT JOIN {user} deputyuser ON deputyuser.id = deputy.userid";
                     $whereclause = !empty($filters) ? 'WHERE ' . implode(' AND ', $filters) : '';
                     $countsql = "SELECT COUNT(DISTINCT t.id)
-                           FROM {dutydesk_task} t
+                           FROM {local_dutydesk_task} t
                            {$joins}
                            {$whereclause}";
                     $totaltasks = (int)$DB->count_records_sql($countsql, $params);
                     if ($totaltasks > 0) {
                         $tasksdatasql = "SELECT DISTINCT t.*, COALESCE(p.isvacant, 0) AS vacant_sort
-                                   FROM {dutydesk_task} t
+                                   FROM {local_dutydesk_task} t
                                    {$joins}
                                    {$whereclause}
                                ORDER BY vacant_sort DESC, t.title ASC, t.id ASC";
@@ -670,16 +670,16 @@ class controller {
                 }
                 $vacantsql = $vacantonly ? ' AND COALESCE(p.isvacant, 0) = 1' : '';
                 $countsql = "SELECT COUNT(DISTINCT t.id)
-                       FROM {dutydesk_task} t
-                       JOIN {dutydesk_taskassignment} ta ON ta.taskid = t.id
-                       LEFT JOIN {dutydesk_position} p ON p.id = ta.positionid
+                       FROM {local_dutydesk_task} t
+                       JOIN {local_dutydesk_taskassign} ta ON ta.taskid = t.id
+                       LEFT JOIN {local_dutydesk_position} p ON p.id = ta.positionid
                       WHERE ta.positionid = :positionidfilter{$categorysql}{$departmentsql}{$vacantsql}";
                 $totaltasks = (int)$DB->count_records_sql($countsql, $params);
                 if ($totaltasks > 0) {
                     $tasksdatasql = "SELECT DISTINCT t.*, COALESCE(p.isvacant, 0) AS vacant_sort
-                               FROM {dutydesk_task} t
-                               JOIN {dutydesk_taskassignment} ta ON ta.taskid = t.id
-                          LEFT JOIN {dutydesk_position} p ON p.id = ta.positionid
+                               FROM {local_dutydesk_task} t
+                               JOIN {local_dutydesk_taskassign} ta ON ta.taskid = t.id
+                          LEFT JOIN {local_dutydesk_position} p ON p.id = ta.positionid
                               WHERE ta.positionid = :positionidfilter{$categorysql}{$departmentsql}{$vacantsql}
                            ORDER BY vacant_sort DESC, t.title ASC, t.id ASC";
                     $tasksdataparams = $params;
@@ -701,16 +701,16 @@ class controller {
                 }
                 $whereclause = !empty($filters) ? 'WHERE ' . implode(' AND ', $filters) : '';
                 $countsql = "SELECT COUNT(DISTINCT t.id)
-                       FROM {dutydesk_task} t
-                  LEFT JOIN {dutydesk_taskassignment} ta ON ta.taskid = t.id
-                  LEFT JOIN {dutydesk_position} p ON p.id = ta.positionid
+                       FROM {local_dutydesk_task} t
+                  LEFT JOIN {local_dutydesk_taskassign} ta ON ta.taskid = t.id
+                  LEFT JOIN {local_dutydesk_position} p ON p.id = ta.positionid
                        {$whereclause}";
                 $totaltasks = (int)$DB->count_records_sql($countsql, $params);
                 if ($totaltasks > 0) {
                     $tasksdatasql = "SELECT DISTINCT t.*, COALESCE(p.isvacant, 0) AS vacant_sort
-                               FROM {dutydesk_task} t
-                          LEFT JOIN {dutydesk_taskassignment} ta ON ta.taskid = t.id
-                          LEFT JOIN {dutydesk_position} p ON p.id = ta.positionid
+                               FROM {local_dutydesk_task} t
+                          LEFT JOIN {local_dutydesk_taskassign} ta ON ta.taskid = t.id
+                          LEFT JOIN {local_dutydesk_position} p ON p.id = ta.positionid
                                {$whereclause}
                            ORDER BY vacant_sort DESC, t.title ASC, t.id ASC";
                     $tasksdataparams = $params;
@@ -751,16 +751,16 @@ class controller {
                     return "({$condition})";
                 }, $conditions));
                 $countsql = "SELECT COUNT(DISTINCT t.id)
-                       FROM {dutydesk_task} t
-                       JOIN {dutydesk_taskassignment} ta ON ta.taskid = t.id
-                       JOIN {dutydesk_position} p ON p.id = ta.positionid
+                       FROM {local_dutydesk_task} t
+                       JOIN {local_dutydesk_taskassign} ta ON ta.taskid = t.id
+                       JOIN {local_dutydesk_position} p ON p.id = ta.positionid
                       WHERE {$where}{$categorysql}{$departmentfiltersql}{$positionfiltersql}{$vacantsql}";
                 $totaltasks = (int)$DB->count_records_sql($countsql, $params);
                 if ($totaltasks > 0) {
                     $tasksdatasql = "SELECT DISTINCT t.*, COALESCE(p.isvacant, 0) AS vacant_sort
-                               FROM {dutydesk_task} t
-                               JOIN {dutydesk_taskassignment} ta ON ta.taskid = t.id
-                               JOIN {dutydesk_position} p ON p.id = ta.positionid
+                               FROM {local_dutydesk_task} t
+                               JOIN {local_dutydesk_taskassign} ta ON ta.taskid = t.id
+                               JOIN {local_dutydesk_position} p ON p.id = ta.positionid
                               WHERE {$where}{$categorysql}{$departmentfiltersql}{$positionfiltersql}{$vacantsql}
                            ORDER BY vacant_sort DESC, t.title ASC, t.id ASC";
                     $tasksdataparams = $params;
@@ -776,9 +776,16 @@ class controller {
                 if ($tasksdatasql !== '') {
                     $records = $DB->get_records_sql($tasksdatasql, $tasksdataparams, $offset, $perpage);
                 } else if (!empty($taskconditions)) {
-                    $records = $DB->get_records('dutydesk_task', $taskconditions, 'title ASC, id ASC', '*', $offset, $perpage);
+                    $records = $DB->get_records(
+                        'local_dutydesk_task',
+                        $taskconditions,
+                        'title ASC, id ASC',
+                        '*',
+                        $offset,
+                        $perpage
+                    );
                 } else {
-                    $records = $DB->get_records('dutydesk_task', null, 'title ASC, id ASC', '*', $offset, $perpage);
+                    $records = $DB->get_records('local_dutydesk_task', null, 'title ASC, id ASC', '*', $offset, $perpage);
                 }
             } else if ($tasksdatasql !== '') {
                 $records = $DB->get_records_sql($tasksdatasql, $tasksdataparams, $offset, $perpage);
@@ -796,7 +803,7 @@ class controller {
                     $focusedrecord = $records[$focus];
                     $focuswasincluded = true;
                 } else if ($forcefirst && local_dutydesk_user_can_view_task($focus)) {
-                    $focusedrecord = $DB->get_record('dutydesk_task', ['id' => $focus]);
+                    $focusedrecord = $DB->get_record('local_dutydesk_task', ['id' => $focus]);
                 }
                 if ($focusedrecord) {
                     unset($records[$focus]);
@@ -835,11 +842,11 @@ class controller {
                                   deputyuser.lastnamephonetic AS deputylastnamephonetic,
                                   deputyuser.idnumber AS deputyidnumber,
                                   deputyuser.email AS deputyemail
-                             FROM {dutydesk_taskassignment} ta
-                        LEFT JOIN {dutydesk_position} p ON p.id = ta.positionid
-                        LEFT JOIN {dutydesk_department} d ON d.id = p.departmentid
+                             FROM {local_dutydesk_taskassign} ta
+                        LEFT JOIN {local_dutydesk_position} p ON p.id = ta.positionid
+                        LEFT JOIN {local_dutydesk_department} d ON d.id = p.departmentid
                         LEFT JOIN {user} primaryuser ON primaryuser.id = p.primaryuserid
-                        LEFT JOIN {dutydesk_position_deputy} deputy ON deputy.positionid = p.id
+                        LEFT JOIN {local_dutydesk_posdeputy} deputy ON deputy.positionid = p.id
                         LEFT JOIN {user} deputyuser ON deputyuser.id = deputy.userid
                             WHERE ta.taskid {$insql}";
                 $assignmentrecords = $DB->get_records_sql($assignmentssql, $params);
@@ -847,7 +854,12 @@ class controller {
                     $assignmentsbytask[$assignment->taskid] = $assignment;
                 }
 
-                $subtaskrecords = $DB->get_records_select('dutydesk_subtask', "taskid {$insql}", $params, 'sortorder ASC, id ASC');
+                $subtaskrecords = $DB->get_records_select(
+                    'local_dutydesk_subtask',
+                    "taskid {$insql}",
+                    $params,
+                    'sortorder ASC, id ASC'
+                );
                 foreach ($subtaskrecords as $subtask) {
                     $subtasksbytask[$subtask->taskid][] = $subtask;
                 }

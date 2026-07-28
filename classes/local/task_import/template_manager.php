@@ -79,7 +79,7 @@ class template_manager {
      */
     private static function get_rows(): array {
         return [
-            ['Dezernat 13:', '', ''],
+            ['Department example:', '', ''],
             ['Sachgebiet', '', 'Beschreibung (Grundlage fuer Taetigkeitsdarstellung)'],
             ['A', 'Leitungs- und Fuehrungsaufgaben', 'Dienstbesprechung vorbereiten'],
             ['', '', 'Entscheidungsvorlage erstellen'],

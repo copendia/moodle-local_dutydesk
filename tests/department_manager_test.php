@@ -60,15 +60,19 @@ final class department_manager_test extends \advanced_testcase {
             'timestamp' => time(),
         ], [$manageruser->id], [$categoryid, $othercategoryid], $USER->id);
 
-        $department = $DB->get_record('dutydesk_department', ['id' => $departmentid], '*', MUST_EXIST);
+        $department = $DB->get_record('local_dutydesk_department', ['id' => $departmentid], '*', MUST_EXIST);
         $this->assertSame('Created department', $department->name);
 
-        $assignment = $DB->get_record('dutydesk_department_manager', ['departmentid' => $departmentid], '*', MUST_EXIST);
+        $assignment = $DB->get_record('local_dutydesk_deptmgr', ['departmentid' => $departmentid], '*', MUST_EXIST);
         $this->assertSame((int)$manageruser->id, (int)$assignment->userid);
         $this->assertSame((int)$USER->id, (int)$assignment->assignedby);
 
-        $this->assertSame($departmentid, (int)$DB->get_field('dutydesk_category', 'departmentid', ['id' => $categoryid]));
-        $this->assertSame($otherdepartmentid, (int)$DB->get_field('dutydesk_category', 'departmentid', ['id' => $othercategoryid]));
+        $this->assertSame($departmentid, (int)$DB->get_field('local_dutydesk_category', 'departmentid', [
+            'id' => $categoryid,
+        ]));
+        $this->assertSame($otherdepartmentid, (int)$DB->get_field('local_dutydesk_category', 'departmentid', [
+            'id' => $othercategoryid,
+        ]));
     }
 
     /**
@@ -93,14 +97,14 @@ final class department_manager_test extends \advanced_testcase {
             'timestamp' => time(),
         ], null, [$newcategoryid], $USER->id);
 
-        $department = $DB->get_record('dutydesk_department', ['id' => $departmentid], '*', MUST_EXIST);
+        $department = $DB->get_record('local_dutydesk_department', ['id' => $departmentid], '*', MUST_EXIST);
         $this->assertSame('Updated department', $department->name);
 
-        $assignment = $DB->get_record('dutydesk_department_manager', ['departmentid' => $departmentid], '*', MUST_EXIST);
+        $assignment = $DB->get_record('local_dutydesk_deptmgr', ['departmentid' => $departmentid], '*', MUST_EXIST);
         $this->assertSame((int)$manageruser->id, (int)$assignment->userid);
 
-        $this->assertNull($DB->get_field('dutydesk_category', 'departmentid', ['id' => $oldcategoryid]));
-        $this->assertSame($departmentid, (int)$DB->get_field('dutydesk_category', 'departmentid', ['id' => $newcategoryid]));
+        $this->assertNull($DB->get_field('local_dutydesk_category', 'departmentid', ['id' => $oldcategoryid]));
+        $this->assertSame($departmentid, (int)$DB->get_field('local_dutydesk_category', 'departmentid', ['id' => $newcategoryid]));
     }
 
     /**
@@ -118,8 +122,8 @@ final class department_manager_test extends \advanced_testcase {
 
         manager::delete_department($departmentid);
 
-        $this->assertFalse($DB->record_exists('dutydesk_department', ['id' => $departmentid]));
-        $this->assertFalse($DB->record_exists('dutydesk_department_manager', ['departmentid' => $departmentid]));
+        $this->assertFalse($DB->record_exists('local_dutydesk_department', ['id' => $departmentid]));
+        $this->assertFalse($DB->record_exists('local_dutydesk_deptmgr', ['departmentid' => $departmentid]));
     }
 
     /**
@@ -147,7 +151,7 @@ final class department_manager_test extends \advanced_testcase {
     private function create_department_record(string $name): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_department', (object) [
+        return (int)$DB->insert_record('local_dutydesk_department', (object) [
             'name' => $name,
             'description' => '',
             'timestamp' => time(),
@@ -162,7 +166,7 @@ final class department_manager_test extends \advanced_testcase {
     private function create_category(string $name, ?int $departmentid = null): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_category', (object) [
+        return (int)$DB->insert_record('local_dutydesk_category', (object) [
             'name' => $name,
             'departmentid' => $departmentid,
         ]);

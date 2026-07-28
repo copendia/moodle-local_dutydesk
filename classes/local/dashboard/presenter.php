@@ -59,7 +59,7 @@ class presenter {
         $userdepartmentids = \local_dutydesk_get_user_department_ids($userid);
 
         if ($canviewallpositions) {
-            $positions = $DB->get_records('dutydesk_position', null, 'title ASC');
+            $positions = $DB->get_records('local_dutydesk_position', null, 'title ASC');
             if ($canviewownpositions) {
                 $ownpositionids = \local_dutydesk_get_user_position_ids($userid);
                 if (!empty($ownpositionids)) {
@@ -77,13 +77,13 @@ class presenter {
                 }
             }
         } else if ($canviewownpositions) {
-            $primarypositions = $DB->get_records('dutydesk_position', ['primaryuserid' => $userid]);
+            $primarypositions = $DB->get_records('local_dutydesk_position', ['primaryuserid' => $userid]);
             foreach ($primarypositions as $position) {
                 $positions[$position->id] = $position;
                 $positionroles[$position->id]['primary'] = true;
             }
 
-            $deputyassignments = $DB->get_records('dutydesk_position_deputy', ['userid' => $userid]);
+            $deputyassignments = $DB->get_records('local_dutydesk_posdeputy', ['userid' => $userid]);
             if (!empty($deputyassignments)) {
                 $deputypositionids = array_map(static function ($record) {
                     return (int)$record->positionid;
@@ -91,7 +91,7 @@ class presenter {
                 $deputypositionids = array_filter($deputypositionids);
 
                 if (!empty($deputypositionids)) {
-                    $deputypositions = $DB->get_records_list('dutydesk_position', 'id', $deputypositionids);
+                    $deputypositions = $DB->get_records_list('local_dutydesk_position', 'id', $deputypositionids);
                     foreach ($deputypositions as $position) {
                         $positions[$position->id] = $position;
                         $positionroles[$position->id]['deputy'] = true;
@@ -101,14 +101,14 @@ class presenter {
         }
 
         if (!empty($manageddepartmentids)) {
-            $managedpositions = $DB->get_records_list('dutydesk_position', 'departmentid', $manageddepartmentids);
+            $managedpositions = $DB->get_records_list('local_dutydesk_position', 'departmentid', $manageddepartmentids);
             foreach ($managedpositions as $position) {
                 $positions[$position->id] = $position;
             }
         }
 
         if (!empty($userdepartmentids)) {
-            $departmentpositions = $DB->get_records_list('dutydesk_position', 'departmentid', $userdepartmentids);
+            $departmentpositions = $DB->get_records_list('local_dutydesk_position', 'departmentid', $userdepartmentids);
             foreach ($departmentpositions as $position) {
                 $positions[$position->id] = $position;
             }
@@ -248,7 +248,7 @@ class presenter {
             return [];
         }
 
-        return $DB->get_records_list('dutydesk_department', 'id', $departmentids);
+        return $DB->get_records_list('local_dutydesk_department', 'id', $departmentids);
     }
 
     /**
@@ -272,7 +272,7 @@ class presenter {
         $deputiesbypostion = [];
         $deputyuserids = [];
         if (!empty($positionids)) {
-            $alldeputies = $DB->get_records_list('dutydesk_position_deputy', 'positionid', $positionids);
+            $alldeputies = $DB->get_records_list('local_dutydesk_posdeputy', 'positionid', $positionids);
             foreach ($alldeputies as $deputy) {
                 $deputiesbypostion[$deputy->positionid] = $deputy;
                 if (!empty($deputy->userid)) {
@@ -307,8 +307,8 @@ class presenter {
 
         [$insql, $params] = $DB->get_in_or_equal($positionids, SQL_PARAMS_NAMED);
         $tasksql = "SELECT t.*, ta.positionid, ta.workloadpercent
-                      FROM {dutydesk_taskassignment} ta
-                      JOIN {dutydesk_task} t ON t.id = ta.taskid
+                      FROM {local_dutydesk_taskassign} ta
+                      JOIN {local_dutydesk_task} t ON t.id = ta.taskid
                      WHERE ta.positionid {$insql}
                   ORDER BY t.title ASC";
         $taskrecords = $DB->get_records_sql($tasksql, $params);
@@ -322,7 +322,7 @@ class presenter {
 
         if (!empty($taskids)) {
             [$subinsql, $subparams] = $DB->get_in_or_equal($taskids, SQL_PARAMS_NAMED);
-            $subtasksql = "SELECT * FROM {dutydesk_subtask}
+            $subtasksql = "SELECT * FROM {local_dutydesk_subtask}
                             WHERE taskid {$subinsql}
                          ORDER BY sortorder ASC, id ASC";
             $subtaskrecords = $DB->get_records_sql($subtasksql, $subparams);

@@ -1,5 +1,5 @@
 define([], function() {
-    const selectors = {
+    var selectors = {
         chipsContainer: '[data-region="position-task-category-chips"]',
         taskSelect: 'id_taskids',
         departmentSelect: 'id_departmentid',
@@ -8,27 +8,27 @@ define([], function() {
         chip: '[data-taskcat-chip]',
     };
 
-    const triggerSelectChange = function(select) {
+    var triggerSelectChange = function(select) {
         if (window.jQuery && window.jQuery(select).data('select2')) {
             window.jQuery(select).trigger('change.select2');
             return;
         }
 
-        const event = new Event('change', {bubbles: true});
+        var event = new Event('change', {bubbles: true});
         select.dispatchEvent(event);
     };
 
-    const init = function(categoryByTask, departmentByCategory) {
-        const chipsContainer = document.querySelector(selectors.chipsContainer);
-        const select = document.getElementById(selectors.taskSelect);
-        const departmentSelect = document.getElementById(selectors.departmentSelect);
+    var init = function(categoryByTask, departmentByCategory) {
+        var chipsContainer = document.querySelector(selectors.chipsContainer);
+        var select = document.getElementById(selectors.taskSelect);
+        var departmentSelect = document.getElementById(selectors.departmentSelect);
         if (!chipsContainer || !select || chipsContainer.dataset.initialized === '1') {
             return;
         }
         chipsContainer.dataset.initialized = '1';
 
-        let activeCategories = [];
-        const allOptions = Array.prototype.map.call(select.options, function(option) {
+        var activeCategories = [];
+        var allOptions = Array.prototype.map.call(select.options, function(option) {
             return {
                 value: String(option.value || ''),
                 text: option.text,
@@ -36,25 +36,25 @@ define([], function() {
             };
         });
 
-        const getSelectedDepartment = function() {
+        var getSelectedDepartment = function() {
             return departmentSelect ? String(departmentSelect.value || '') : '';
         };
 
-        const setChipActive = function(chip, active) {
+        var setChipActive = function(chip, active) {
             chip.classList.toggle('local-dutydesk-filter-chip--active', active);
             chip.setAttribute('aria-pressed', active ? 'true' : 'false');
         };
 
-        const updateCategoryVisibility = function() {
-            const selectedDepartment = getSelectedDepartment();
-            const allChip = chipsContainer.querySelector(selectors.allChip);
-            const categoryChips = chipsContainer.querySelectorAll(selectors.categoryChip);
-            const visibleActiveCategories = [];
+        var updateCategoryVisibility = function() {
+            var selectedDepartment = getSelectedDepartment();
+            var allChip = chipsContainer.querySelector(selectors.allChip);
+            var categoryChips = chipsContainer.querySelectorAll(selectors.categoryChip);
+            var visibleActiveCategories = [];
 
             categoryChips.forEach(function(chip) {
-                const category = chip.getAttribute('data-taskcat-chip');
-                const categoryDepartment = String(chip.getAttribute('data-taskcat-department') || '');
-                const visible = !selectedDepartment || categoryDepartment === selectedDepartment;
+                var category = chip.getAttribute('data-taskcat-chip');
+                var categoryDepartment = String(chip.getAttribute('data-taskcat-department') || '');
+                var visible = !selectedDepartment || categoryDepartment === selectedDepartment;
                 chip.hidden = !visible;
 
                 if (!visible && chip.classList.contains('local-dutydesk-filter-chip--active')) {
@@ -71,10 +71,10 @@ define([], function() {
             }
         };
 
-        const applyFilter = function() {
-            const hasFilter = activeCategories.length > 0;
-            const selectedDepartment = getSelectedDepartment();
-            const selectedValues = {};
+        var applyFilter = function() {
+            var hasFilter = activeCategories.length > 0;
+            var selectedDepartment = getSelectedDepartment();
+            var selectedValues = {};
             Array.prototype.forEach.call(select.options, function(option) {
                 if (option.selected && option.value) {
                     selectedValues[String(option.value)] = true;
@@ -91,11 +91,11 @@ define([], function() {
                     return;
                 }
 
-                const category = String(categoryByTask[optiondata.value] || 0);
-                const categoryDepartment = String(departmentByCategory[category] || '');
-                const keepSelected = !!selectedValues[optiondata.value];
-                const departmentAllowed = !selectedDepartment || categoryDepartment === selectedDepartment;
-                const allowed = departmentAllowed && (!hasFilter || activeCategories.indexOf(category) !== -1);
+                var category = String(categoryByTask[optiondata.value] || 0);
+                var categoryDepartment = String(departmentByCategory[category] || '');
+                var keepSelected = !!selectedValues[optiondata.value];
+                var departmentAllowed = !selectedDepartment || categoryDepartment === selectedDepartment;
+                var allowed = departmentAllowed && (!hasFilter || activeCategories.indexOf(category) !== -1);
                 if (!allowed && !keepSelected) {
                     return;
                 }
@@ -107,15 +107,15 @@ define([], function() {
         };
 
         chipsContainer.addEventListener('click', function(event) {
-            const chip = event.target.closest(selectors.chip);
+            var chip = event.target.closest(selectors.chip);
             if (!chip) {
                 return;
             }
             event.preventDefault();
 
-            const value = chip.getAttribute('data-taskcat-chip');
-            const allChip = chipsContainer.querySelector(selectors.allChip);
-            const categoryChips = chipsContainer.querySelectorAll(selectors.categoryChip);
+            var value = chip.getAttribute('data-taskcat-chip');
+            var allChip = chipsContainer.querySelector(selectors.allChip);
+            var categoryChips = chipsContainer.querySelectorAll(selectors.categoryChip);
 
             if (value === 'all') {
                 activeCategories = [];
@@ -133,7 +133,7 @@ define([], function() {
             }
 
             setChipActive(allChip, false);
-            const isActive = chip.classList.contains('local-dutydesk-filter-chip--active');
+            var isActive = chip.classList.contains('local-dutydesk-filter-chip--active');
             setChipActive(chip, !isActive);
 
             activeCategories = [];

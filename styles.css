@@ -877,11 +877,6 @@
   overflow: hidden;
 }
 
-.local-dutydesk-position-list-header-media {
-  border-top-left-radius: calc(0.25rem - 1px);
-  border-top-right-radius: calc(0.25rem - 1px);
-}
-
 .local-dutydesk-position-list .card > .card-header {
   border-top: 0;
 }

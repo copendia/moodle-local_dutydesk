@@ -46,7 +46,7 @@ class manager {
             return;
         }
 
-        $position = $DB->get_record('dutydesk_position', ['id' => $positionid], 'id, archived');
+        $position = $DB->get_record('local_dutydesk_position', ['id' => $positionid], 'id, archived');
         if (!$position) {
             return;
         }
@@ -54,9 +54,9 @@ class manager {
             throw new \moodle_exception('positiondeleterequiresarchive', 'local_dutydesk');
         }
 
-        $DB->delete_records('dutydesk_position', ['id' => $positionid]);
-        $DB->delete_records('dutydesk_position_deputy', ['positionid' => $positionid]);
-        $DB->delete_records('dutydesk_taskassignment', ['positionid' => $positionid]);
+        $DB->delete_records('local_dutydesk_position', ['id' => $positionid]);
+        $DB->delete_records('local_dutydesk_posdeputy', ['positionid' => $positionid]);
+        $DB->delete_records('local_dutydesk_taskassign', ['positionid' => $positionid]);
     }
 
     /**
@@ -90,7 +90,7 @@ class manager {
     public static function create_position(\stdClass $position, int $deputyuserid, array $taskids): int {
         global $DB;
 
-        $positionid = (int)$DB->insert_record('dutydesk_position', $position);
+        $positionid = (int)$DB->insert_record('local_dutydesk_position', $position);
         self::save_deputy($positionid, $deputyuserid);
         \local_dutydesk_sync_position_tasks($positionid, $taskids);
 
@@ -108,7 +108,7 @@ class manager {
     public static function update_position(\stdClass $position, int $deputyuserid, array $taskids): void {
         global $DB;
 
-        $DB->update_record('dutydesk_position', $position);
+        $DB->update_record('local_dutydesk_position', $position);
         self::save_deputy((int)$position->id, $deputyuserid);
         \local_dutydesk_sync_position_tasks((int)$position->id, $taskids);
     }
@@ -127,7 +127,7 @@ class manager {
             return;
         }
 
-        $existing = $DB->get_record('dutydesk_position_deputy', ['positionid' => $positionid]);
+        $existing = $DB->get_record('local_dutydesk_posdeputy', ['positionid' => $positionid]);
 
         if ($userid > 0) {
             $record = (object) [
@@ -139,12 +139,12 @@ class manager {
 
             if ($existing) {
                 $record->id = $existing->id;
-                $DB->update_record('dutydesk_position_deputy', $record);
+                $DB->update_record('local_dutydesk_posdeputy', $record);
             } else {
-                $DB->insert_record('dutydesk_position_deputy', $record);
+                $DB->insert_record('local_dutydesk_posdeputy', $record);
             }
         } else if ($existing) {
-            $DB->delete_records('dutydesk_position_deputy', ['id' => $existing->id]);
+            $DB->delete_records('local_dutydesk_posdeputy', ['id' => $existing->id]);
         }
     }
 
@@ -162,7 +162,7 @@ class manager {
             return;
         }
 
-        $DB->update_record('dutydesk_position', (object) [
+        $DB->update_record('local_dutydesk_position', (object) [
             'id' => $positionid,
             'archived' => $archived ? 1 : 0,
             'archivedtime' => $archived ? time() : null,

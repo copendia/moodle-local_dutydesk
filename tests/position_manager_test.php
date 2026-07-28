@@ -66,16 +66,16 @@ final class position_manager_test extends \advanced_testcase {
             'timestamp' => time(),
         ], $deputyuser->id, [$taskone, $tasktwo]);
 
-        $position = $DB->get_record('dutydesk_position', ['id' => $positionid], '*', MUST_EXIST);
+        $position = $DB->get_record('local_dutydesk_position', ['id' => $positionid], '*', MUST_EXIST);
         $this->assertSame('Position A', $position->title);
         $this->assertSame((int)$departmentid, (int)$position->departmentid);
         $this->assertSame((int)$primaryuser->id, (int)$position->primaryuserid);
 
-        $deputy = $DB->get_record('dutydesk_position_deputy', ['positionid' => $positionid], '*', MUST_EXIST);
+        $deputy = $DB->get_record('local_dutydesk_posdeputy', ['positionid' => $positionid], '*', MUST_EXIST);
         $this->assertSame((int)$deputyuser->id, (int)$deputy->userid);
 
         $assignedtaskids = $DB->get_fieldset_select(
-            'dutydesk_taskassignment',
+            'local_dutydesk_taskassign',
             'taskid',
             'positionid = ?',
             [$positionid]
@@ -122,15 +122,15 @@ final class position_manager_test extends \advanced_testcase {
             'timestamp' => time(),
         ], $newdeputy->id, [$kepttask, $addedtask]);
 
-        $position = $DB->get_record('dutydesk_position', ['id' => $positionid], '*', MUST_EXIST);
+        $position = $DB->get_record('local_dutydesk_position', ['id' => $positionid], '*', MUST_EXIST);
         $this->assertSame('Updated position', $position->title);
         $this->assertSame(1, (int)$position->isvacant);
 
-        $deputy = $DB->get_record('dutydesk_position_deputy', ['positionid' => $positionid], '*', MUST_EXIST);
+        $deputy = $DB->get_record('local_dutydesk_posdeputy', ['positionid' => $positionid], '*', MUST_EXIST);
         $this->assertSame((int)$newdeputy->id, (int)$deputy->userid);
 
         $assignedtaskids = $DB->get_fieldset_select(
-            'dutydesk_taskassignment',
+            'local_dutydesk_taskassign',
             'taskid',
             'positionid = ?',
             [$positionid]
@@ -175,9 +175,9 @@ final class position_manager_test extends \advanced_testcase {
         manager::archive_position($positionid);
         manager::delete_position($positionid);
 
-        $this->assertFalse($DB->record_exists('dutydesk_position', ['id' => $positionid]));
-        $this->assertFalse($DB->record_exists('dutydesk_position_deputy', ['positionid' => $positionid]));
-        $this->assertFalse($DB->record_exists('dutydesk_taskassignment', ['positionid' => $positionid]));
+        $this->assertFalse($DB->record_exists('local_dutydesk_position', ['id' => $positionid]));
+        $this->assertFalse($DB->record_exists('local_dutydesk_posdeputy', ['positionid' => $positionid]));
+        $this->assertFalse($DB->record_exists('local_dutydesk_taskassign', ['positionid' => $positionid]));
     }
 
     /**
@@ -190,12 +190,12 @@ final class position_manager_test extends \advanced_testcase {
         $positionid = $this->create_position($departmentid, 'Position to archive');
 
         manager::archive_position($positionid);
-        $archived = $DB->get_record('dutydesk_position', ['id' => $positionid], '*', MUST_EXIST);
+        $archived = $DB->get_record('local_dutydesk_position', ['id' => $positionid], '*', MUST_EXIST);
         $this->assertSame(1, (int)$archived->archived);
         $this->assertNotEmpty($archived->archivedtime);
 
         manager::restore_position($positionid);
-        $restored = $DB->get_record('dutydesk_position', ['id' => $positionid], '*', MUST_EXIST);
+        $restored = $DB->get_record('local_dutydesk_position', ['id' => $positionid], '*', MUST_EXIST);
         $this->assertSame(0, (int)$restored->archived);
         $this->assertEmpty($restored->archivedtime);
     }
@@ -208,7 +208,7 @@ final class position_manager_test extends \advanced_testcase {
     private function create_department(string $name): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_department', (object) [
+        return (int)$DB->insert_record('local_dutydesk_department', (object) [
             'name' => $name,
             'description' => '',
             'timestamp' => time(),
@@ -228,7 +228,7 @@ final class position_manager_test extends \advanced_testcase {
     ): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_position', (object) [
+        return (int)$DB->insert_record('local_dutydesk_position', (object) [
             'title' => $title,
             'positiontype' => $positiontype,
             'departmentid' => $departmentid,
@@ -248,7 +248,7 @@ final class position_manager_test extends \advanced_testcase {
     private function create_task(string $title): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_task', (object) [
+        return (int)$DB->insert_record('local_dutydesk_task', (object) [
             'title' => $title,
             'description' => '',
             'descriptionformat' => FORMAT_HTML,

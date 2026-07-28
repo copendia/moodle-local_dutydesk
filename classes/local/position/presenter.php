@@ -53,7 +53,7 @@ class presenter {
         }
 
         $positionids = array_keys($records);
-        $departments = $DB->get_records_menu('dutydesk_department', null, 'name ASC', 'id, name');
+        $departments = $DB->get_records_menu('local_dutydesk_department', null, 'name ASC', 'id, name');
         $tasksbyposition = [];
         $subtasksbytask = [];
         $deputiesbyposition = [];
@@ -64,8 +64,8 @@ class presenter {
             [$insql, $params] = $DB->get_in_or_equal($positionids, SQL_PARAMS_NAMED);
             $assignmentsql = "SELECT ta.id, ta.positionid, ta.taskid, ta.workloadpercent, t.title AS tasktitle,
                                      t.description AS taskdescription, t.descriptionformat AS taskdescriptionformat
-                                FROM {dutydesk_taskassignment} ta
-                           LEFT JOIN {dutydesk_task} t ON t.id = ta.taskid
+                                FROM {local_dutydesk_taskassign} ta
+                           LEFT JOIN {local_dutydesk_task} t ON t.id = ta.taskid
                                WHERE ta.positionid {$insql}
                             ORDER BY t.title ASC";
             $assignmentrecords = $DB->get_records_sql($assignmentsql, $params);
@@ -85,7 +85,7 @@ class presenter {
             if (!empty($assignedtaskids)) {
                 [$taskinsql, $taskparams] = $DB->get_in_or_equal($assignedtaskids, SQL_PARAMS_NAMED);
                 $subtaskrecords = $DB->get_records_select(
-                    'dutydesk_subtask',
+                    'local_dutydesk_subtask',
                     "taskid {$taskinsql}",
                     $taskparams,
                     'sortorder ASC, id ASC',
@@ -96,7 +96,7 @@ class presenter {
                 }
             }
 
-            $deputyrecords = $DB->get_records_list('dutydesk_position_deputy', 'positionid', $positionids);
+            $deputyrecords = $DB->get_records_list('local_dutydesk_posdeputy', 'positionid', $positionids);
             foreach ($deputyrecords as $deputy) {
                 $deputiesbyposition[$deputy->positionid] = $deputy;
                 if (!empty($deputy->userid)) {

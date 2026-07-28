@@ -56,7 +56,7 @@ final class dashboard_manager_test extends \advanced_testcase {
 
         manager::handle_vacancy_toggle(\context_system::instance(), (int)$USER->id, 0, 10, $positionid, true);
 
-        $this->assertSame(0, (int)$DB->get_field('dutydesk_position', 'isvacant', ['id' => $positionid]));
+        $this->assertSame(0, (int)$DB->get_field('local_dutydesk_position', 'isvacant', ['id' => $positionid]));
     }
 
     /**
@@ -81,7 +81,7 @@ final class dashboard_manager_test extends \advanced_testcase {
     private function create_department(string $name): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_department', (object) [
+        return (int)$DB->insert_record('local_dutydesk_department', (object) [
             'name' => $name,
             'description' => '',
             'timestamp' => time(),
@@ -96,7 +96,7 @@ final class dashboard_manager_test extends \advanced_testcase {
     private function create_position(int $departmentid, string $title, string $positiontype): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_position', (object) [
+        return (int)$DB->insert_record('local_dutydesk_position', (object) [
             'title' => $title,
             'positiontype' => $positiontype,
             'departmentid' => $departmentid,

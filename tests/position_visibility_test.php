@@ -136,7 +136,7 @@ final class position_visibility_test extends \advanced_testcase {
     private function create_department(string $name): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_department', (object) [
+        return (int)$DB->insert_record('local_dutydesk_department', (object) [
             'name' => $name,
             'description' => '',
             'timestamp' => time(),
@@ -156,7 +156,7 @@ final class position_visibility_test extends \advanced_testcase {
     ): int {
         global $DB;
 
-        return (int)$DB->insert_record('dutydesk_position', (object) [
+        return (int)$DB->insert_record('local_dutydesk_position', (object) [
             'title' => $title,
             'positiontype' => $positiontype,
             'departmentid' => $departmentid,

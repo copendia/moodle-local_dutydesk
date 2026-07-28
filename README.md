@@ -31,13 +31,35 @@ updated consistently instead of being tracked in disconnected spreadsheets.
 
 ### AMD / JavaScript
 
-Build AMD modules after changing files in `amd/src`:
+Build AMD modules from the Moodle root directory after changing files in `amd/src`:
 
 ```bash
 grunt amd --root=local/dutydesk --force
 ```
 
 The generated files in `amd/build` are committed so the plugin can be installed without running Grunt on the target server.
+
+### Docker Development Site
+
+Start a fresh Moodle 4.5 site with DutyDesk installed:
+
+```bash
+docker compose -f docker-compose.moodle45.yml up --build
+```
+
+Open `http://localhost:8085` and log in with:
+
+```text
+Username: admin
+Password: Admin123!
+```
+
+The container uses `MOODLE_405_STABLE`, MariaDB 11 and persistent Docker volumes for the database and Moodle data.
+To reset the site completely, stop it and remove the volumes:
+
+```bash
+docker compose -f docker-compose.moodle45.yml down -v
+```
 
 ### Unit Tests
 

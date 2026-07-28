@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
-<XMLDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" PATH="local/dutydesk/db" VERSION="20250903053" COMMENT="DutyDesk install.xml mit Kommentaren" xsi:noNamespaceSchemaLocation="../../lib/xmldb/xmldb.xsd">
+<XMLDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" PATH="local/dutydesk/db" VERSION="20250903054" COMMENT="DutyDesk install.xml mit Kommentaren" xsi:noNamespaceSchemaLocation="../../lib/xmldb/xmldb.xsd">
     <TABLES>
-        <TABLE NAME="dutydesk_department" COMMENT="Dezernate und Organisationseinheiten">
+        <TABLE NAME="local_dutydesk_department" COMMENT="Dezernate und Organisationseinheiten">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
                 <FIELD NAME="name" TYPE="char" NOTNULL="true" LENGTH="255"/>
@@ -12,7 +12,7 @@
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="dutydesk_department_manager" COMMENT="Verknüpfung zwischen Dezernaten und deren Leitungen">
+        <TABLE NAME="local_dutydesk_deptmgr" COMMENT="Verknüpfung zwischen Dezernaten und deren Leitungen">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
                 <FIELD NAME="departmentid" TYPE="int" NOTNULL="true" LENGTH="10"/>
@@ -25,7 +25,7 @@
                 <KEY NAME="deptuseruniq" TYPE="unique" FIELDS="departmentid, userid"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="dutydesk_position" COMMENT="Stellen im Dienstplan">
+        <TABLE NAME="local_dutydesk_position" COMMENT="Stellen im Dienstplan">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
                 <FIELD NAME="title" TYPE="char" NOTNULL="true" LENGTH="255"/>
@@ -42,7 +42,7 @@
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="dutydesk_userinfo" COMMENT="Erweiterungstabelle für Benutzerinformationen">
+        <TABLE NAME="local_dutydesk_userinfo" COMMENT="Erweiterungstabelle für Benutzerinformationen">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
                 <FIELD NAME="userid" TYPE="int" NOTNULL="true" LENGTH="10"/>
@@ -54,7 +54,7 @@
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="dutydesk_task" COMMENT="Aufgaben, die Stellen zugewiesen sind">
+        <TABLE NAME="local_dutydesk_task" COMMENT="Aufgaben, die Stellen zugewiesen sind">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
                 <FIELD NAME="title" TYPE="char" NOTNULL="true" LENGTH="255"/>
@@ -69,7 +69,7 @@
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="dutydesk_subtask" COMMENT="Unteraufgaben zu Aufgaben">
+        <TABLE NAME="local_dutydesk_subtask" COMMENT="Unteraufgaben zu Aufgaben">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
                 <FIELD NAME="taskid" TYPE="int" NOTNULL="true" LENGTH="10"/>
@@ -82,7 +82,7 @@
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="dutydesk_taskassignment" COMMENT="Primäre Aufgaben-Zuweisungen zu Positionen">
+        <TABLE NAME="local_dutydesk_taskassign" COMMENT="Primäre Aufgaben-Zuweisungen zu Positionen">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
                 <FIELD NAME="taskid" TYPE="int" NOTNULL="true" LENGTH="10"/>
@@ -95,7 +95,7 @@
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="dutydesk_position_deputy" COMMENT="Vertretungsregelungen für Stellen">
+        <TABLE NAME="local_dutydesk_posdeputy" COMMENT="Vertretungsregelungen für Stellen">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
                 <FIELD NAME="positionid" TYPE="int" NOTNULL="true" LENGTH="10"/>
@@ -108,7 +108,7 @@
                 <KEY NAME="uniqposition" TYPE="unique" FIELDS="positionid"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="dutydesk_category" COMMENT="Aufgabenkategorien">
+        <TABLE NAME="local_dutydesk_category" COMMENT="Aufgabenkategorien">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
                 <FIELD NAME="name" TYPE="char" NOTNULL="true" LENGTH="255"/>
@@ -118,7 +118,7 @@
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="dutydesk_comment" COMMENT="Kommentare zu Aufgaben/Schulungen">
+        <TABLE NAME="local_dutydesk_comment" COMMENT="Kommentare zu Aufgaben/Schulungen">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
                 <FIELD NAME="userid" TYPE="int" NOTNULL="true" LENGTH="10"/>
@@ -129,7 +129,7 @@
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="dutydesk_import" COMMENT="Importdateien zur Initialbefüllung">
+        <TABLE NAME="local_dutydesk_import" COMMENT="Importdateien zur Initialbefüllung">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
                 <FIELD NAME="filename" TYPE="char" NOTNULL="true" LENGTH="255"/>
@@ -140,7 +140,7 @@
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
         </TABLE>
-        <TABLE NAME="dutydesk_task_history" COMMENT="Historie von Änderungen an Aufgaben">
+        <TABLE NAME="local_dutydesk_taskhist" COMMENT="Historie von Änderungen an Aufgaben">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" NOTNULL="true" LENGTH="10" SEQUENCE="true"/>
                 <FIELD NAME="taskid" TYPE="int" NOTNULL="true" LENGTH="10"/>

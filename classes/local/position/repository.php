@@ -63,9 +63,9 @@ class repository {
 
         if ($queryallpositions) {
             if ($hassearch) {
-                $searchjoins = " LEFT JOIN {dutydesk_department} d ON d.id = p.departmentid
+                $searchjoins = " LEFT JOIN {local_dutydesk_department} d ON d.id = p.departmentid
                                  LEFT JOIN {user} primaryuser ON primaryuser.id = p.primaryuserid
-                                 LEFT JOIN {dutydesk_position_deputy} deputy ON deputy.positionid = p.id
+                                 LEFT JOIN {local_dutydesk_posdeputy} deputy ON deputy.positionid = p.id
                                  LEFT JOIN {user} deputyuser ON deputyuser.id = deputy.userid";
                 [$searchsql, $searchparams] = \local_dutydesk_build_position_search_condition(
                     $searchlikevalue,
@@ -78,13 +78,13 @@ class repository {
                 $params = array_merge($archivedparams, $searchparams);
                 $where = "{$archivedcondition} AND {$searchsql}";
                 $countsql = "SELECT COUNT(DISTINCT p.id)
-                               FROM {dutydesk_position} p
+                               FROM {local_dutydesk_position} p
                                {$searchjoins}
                               WHERE {$where}";
                 $totalpositions = (int)$DB->count_records_sql($countsql, $params);
                 if ($totalpositions > 0) {
                     $positionsdatasql = "SELECT DISTINCT p.*
-                                           FROM {dutydesk_position} p
+                                           FROM {local_dutydesk_position} p
                                            {$searchjoins}
                                           WHERE {$where}
                                        ORDER BY p.title ASC, p.id ASC";
@@ -92,10 +92,10 @@ class repository {
                     $records = $DB->get_records_sql($positionsdatasql, $positionsdataparams, $offset, $perpage);
                 }
             } else {
-                $totalpositions = $DB->count_records_select('dutydesk_position', $archivedcondition, $archivedparams);
+                $totalpositions = $DB->count_records_select('local_dutydesk_position', $archivedcondition, $archivedparams);
                 if ($totalpositions > 0) {
                     $records = $DB->get_records_select(
-                        'dutydesk_position',
+                        'local_dutydesk_position',
                         $archivedcondition,
                         $archivedparams,
                         'title ASC, id ASC',
@@ -109,9 +109,9 @@ class repository {
             [$insql, $params] = $DB->get_in_or_equal($listpositionids, SQL_PARAMS_NAMED);
             $params = array_merge($params, $archivedparams);
             if ($hassearch) {
-                $searchjoins = " LEFT JOIN {dutydesk_department} d ON d.id = p.departmentid
+                $searchjoins = " LEFT JOIN {local_dutydesk_department} d ON d.id = p.departmentid
                                  LEFT JOIN {user} primaryuser ON primaryuser.id = p.primaryuserid
-                                 LEFT JOIN {dutydesk_position_deputy} deputy ON deputy.positionid = p.id
+                                 LEFT JOIN {local_dutydesk_posdeputy} deputy ON deputy.positionid = p.id
                                  LEFT JOIN {user} deputyuser ON deputyuser.id = deputy.userid";
                 [$searchsql, $searchparams] = \local_dutydesk_build_position_search_condition(
                     $searchlikevalue,
@@ -124,13 +124,13 @@ class repository {
                 $params = array_merge($params, $searchparams);
                 $where = "p.id {$insql} AND {$archivedcondition} AND {$searchsql}";
                 $countsql = "SELECT COUNT(DISTINCT p.id)
-                               FROM {dutydesk_position} p
+                               FROM {local_dutydesk_position} p
                                {$searchjoins}
                               WHERE {$where}";
                 $totalpositions = (int)$DB->count_records_sql($countsql, $params);
                 if ($totalpositions > 0) {
                     $positionsdatasql = "SELECT DISTINCT p.*
-                                           FROM {dutydesk_position} p
+                                           FROM {local_dutydesk_position} p
                                            {$searchjoins}
                                           WHERE {$where}
                                        ORDER BY p.title ASC, p.id ASC";
@@ -139,10 +139,10 @@ class repository {
                 }
             } else {
                 $where = "id {$insql} AND {$archivedcondition}";
-                $totalpositions = $DB->count_records_select('dutydesk_position', $where, $params);
+                $totalpositions = $DB->count_records_select('local_dutydesk_position', $where, $params);
                 if ($totalpositions > 0) {
                     $records = $DB->get_records_select(
-                        'dutydesk_position',
+                        'local_dutydesk_position',
                         $where,
                         $params,
                         'title ASC, id ASC',
@@ -161,7 +161,7 @@ class repository {
                 $records = $DB->get_records_sql($positionsdatasql, $positionsdataparams, $offset, $perpage);
             } else if ($queryallpositions) {
                 $records = $DB->get_records_select(
-                    'dutydesk_position',
+                    'local_dutydesk_position',
                     $archivedcondition,
                     $archivedparams,
                     'title ASC, id ASC',
@@ -174,7 +174,7 @@ class repository {
                 $params = array_merge($params, $archivedparams);
                 $where = "id {$insql} AND {$archivedcondition}";
                 $records = $DB->get_records_select(
-                    'dutydesk_position',
+                    'local_dutydesk_position',
                     $where,
                     $params,
                     'title ASC, id ASC',

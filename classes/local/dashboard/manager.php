@@ -59,7 +59,7 @@ class manager {
         }
 
         $positionrecord = $DB->get_record(
-            'dutydesk_position',
+            'local_dutydesk_position',
             ['id' => $positionid],
             'id, departmentid, positiontype',
             IGNORE_MISSING
@@ -79,7 +79,7 @@ class manager {
             );
         }
 
-        $DB->set_field('dutydesk_position', 'isvacant', $vacant ? 1 : 0, ['id' => $positionid]);
+        $DB->set_field('local_dutydesk_position', 'isvacant', $vacant ? 1 : 0, ['id' => $positionid]);
         redirect(new moodle_url('/local/dutydesk/index.php', [
             'page' => $page,
             'perpage' => $perpage,

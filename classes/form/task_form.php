@@ -81,11 +81,11 @@ class task_form extends \moodleform {
         }
 
         if ($canmanageall) {
-            $positionoptions = $DB->get_records_menu('dutydesk_position', null, 'title ASC', 'id, title');
+            $positionoptions = $DB->get_records_menu('local_dutydesk_position', null, 'title ASC', 'id, title');
         } else {
             $positionids = local_dutydesk_get_manageable_position_ids((int)$userid);
             if (!empty($positionids)) {
-                $positionrecords = $DB->get_records_list('dutydesk_position', 'id', $positionids, 'title ASC', 'id, title');
+                $positionrecords = $DB->get_records_list('local_dutydesk_position', 'id', $positionids, 'title ASC', 'id, title');
                 $positionoptions = [];
                 foreach ($positionrecords as $record) {
                     $positionoptions[$record->id] = \format_string($record->title);

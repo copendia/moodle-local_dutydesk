@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_dutydesk';
-$plugin->version = 20250903053;
+$plugin->version = 20250903054;
 $plugin->requires = 2022112800;
 $plugin->maturity = MATURITY_ALPHA;
 $plugin->release = '0.6.3';

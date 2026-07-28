@@ -57,7 +57,7 @@ class visibility {
         [$deptinsql, $deptparams] = $DB->get_in_or_equal($viewdepartmentids, SQL_PARAMS_NAMED);
         $departmentpositionids = $DB->get_fieldset_sql(
             "SELECT id
-               FROM {dutydesk_position}
+               FROM {local_dutydesk_position}
               WHERE departmentid {$deptinsql}",
             $deptparams
         ) ?? [];
@@ -83,7 +83,7 @@ class visibility {
         [$insql, $params] = $DB->get_in_or_equal($positionids, SQL_PARAMS_NAMED);
         $topicareaids = $DB->get_fieldset_sql(
             "SELECT id
-               FROM {dutydesk_position}
+               FROM {local_dutydesk_position}
               WHERE id {$insql}
                 AND positiontype = :topicareatype",
             $params + ['topicareatype' => LOCAL_DUTYDESK_POSITION_TYPE_TOPICAREA]
@@ -122,7 +122,7 @@ class visibility {
             [$archiveddeptsql, $archiveddeptparams] = $DB->get_in_or_equal($manageddepartmentids, SQL_PARAMS_NAMED);
             $archiveddepartmentpositionids = $DB->get_fieldset_sql(
                 "SELECT id
-                   FROM {dutydesk_position}
+                   FROM {local_dutydesk_position}
                   WHERE departmentid {$archiveddeptsql}",
                 $archiveddeptparams
             ) ?? [];
