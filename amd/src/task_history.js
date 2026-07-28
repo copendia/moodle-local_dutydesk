@@ -6,17 +6,19 @@
 // (at your option) any later version.
 
 define(['core/modal_factory', 'core/notification'], function(ModalFactory, Notification) {
-    const SELECTOR_CONTAINER = '.local-dutydesk-task-list';
-    const SELECTOR_BUTTON = '[data-action="view-task-history"]';
+    var SELECTOR_CONTAINER = '.local-dutydesk-task-list';
+    var SELECTOR_BUTTON = '[data-action="view-task-history"]';
 
-    const fetchHistory = (endpoint, params) => {
-        const url = new URL(endpoint, M.cfg.wwwroot);
-        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+    var fetchHistory = function(endpoint, params) {
+        var url = new URL(endpoint, M.cfg.wwwroot);
+        Object.keys(params).forEach(function(key) {
+            url.searchParams.append(key, params[key]);
+        });
         return fetch(url.toString(), {
             method: 'GET',
             credentials: 'same-origin',
             headers: {'X-Requested-With': 'XMLHttpRequest'}
-        }).then(response => {
+        }).then(function(response) {
             if (!response.ok) {
                 throw new Error(response.statusText);
             }
@@ -24,42 +26,44 @@ define(['core/modal_factory', 'core/notification'], function(ModalFactory, Notif
         });
     };
 
-    const openModal = (data) => {
+    var openModal = function(data) {
         return ModalFactory.create({
             type: ModalFactory.types.DEFAULT,
             title: data.modaltitle,
             body: data.bodyhtml,
-        }).then(modal => {
+        }).then(function(modal) {
             modal.show();
             return modal;
         });
     };
 
-    const init = () => {
-        const container = document.querySelector(SELECTOR_CONTAINER);
+    var init = function() {
+        var container = document.querySelector(SELECTOR_CONTAINER);
         if (!container) {
             return;
         }
-        const endpoint = container.dataset.historyEndpoint;
-        const sesskey = container.dataset.sesskey;
+        var endpoint = container.dataset.historyEndpoint;
+        var sesskey = container.dataset.sesskey;
 
-        container.addEventListener('click', event => {
-            const button = event.target.closest(SELECTOR_BUTTON);
+        container.addEventListener('click', function(event) {
+            var button = event.target.closest(SELECTOR_BUTTON);
             if (!button) {
                 return;
             }
             event.preventDefault();
 
-            const taskid = button.dataset.taskId;
+            var taskid = button.dataset.taskId;
             if (!taskid) {
                 return;
             }
 
-            fetchHistory(endpoint, {taskid, sesskey})
-                .then(data => openModal(data))
+            fetchHistory(endpoint, {taskid: taskid, sesskey: sesskey})
+                .then(function(data) {
+                    return openModal(data);
+                })
                 .catch(Notification.exception);
         });
     };
 
-    return {init};
+    return {init: init};
 });

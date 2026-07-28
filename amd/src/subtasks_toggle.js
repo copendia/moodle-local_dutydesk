@@ -1,20 +1,20 @@
 define([], function() {
-    const DEFAULT_COLLAPSED_HEIGHT = 224;
+    var DEFAULT_COLLAPSED_HEIGHT = 224;
 
-    const selectors = {
+    var selectors = {
         container: '[data-region="subtasks"]',
         toggle: '.local-dutydesk-subtask-toggle',
         toggleAll: '.local-dutydesk-subtasks-toggleall',
         list: '.local-dutydesk-subtasks-list',
     };
 
-    const getPanel = (button) => {
-        const targetId = button.getAttribute('data-target');
+    var getPanel = function(button) {
+        var targetId = button.getAttribute('data-target');
         if (targetId) {
             return document.getElementById(targetId);
         }
 
-        const section = button.closest('.local-dutydesk-subtask');
+        var section = button.closest('.local-dutydesk-subtask');
         if (section) {
             return section.querySelector('.local-dutydesk-subtask-panel');
         }
@@ -22,8 +22,8 @@ define([], function() {
         return null;
     };
 
-    const setExpandedState = (button, panel, expanded) => {
-        const isExpanded = expanded === true;
+    var setExpandedState = function(button, panel, expanded) {
+        var isExpanded = expanded === true;
         button.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
         button.classList.toggle('collapsed', !isExpanded);
 
@@ -40,30 +40,30 @@ define([], function() {
         }
     };
 
-    const togglePanel = (button) => {
-        const panel = getPanel(button);
+    var togglePanel = function(button) {
+        var panel = getPanel(button);
         if (!panel) {
             return;
         }
 
-        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        var isExpanded = button.getAttribute('aria-expanded') === 'true';
         setExpandedState(button, panel, !isExpanded);
     };
 
-    const getCollapsedHeight = (list) => {
-        const attributeValue = parseInt(list.getAttribute('data-collapsed-height'), 10);
+    var getCollapsedHeight = function(list) {
+        var attributeValue = parseInt(list.getAttribute('data-collapsed-height'), 10);
         if (Number.isFinite(attributeValue) && attributeValue > 0) {
             return attributeValue;
         }
         return DEFAULT_COLLAPSED_HEIGHT;
     };
 
-    const updateToggleAllLabel = (container, toggleAll, collapsed) => {
-        const expandLabel = container.getAttribute('data-expand-label')
+    var updateToggleAllLabel = function(container, toggleAll, collapsed) {
+        var expandLabel = container.getAttribute('data-expand-label')
             || toggleAll.dataset.expandLabel
             || toggleAll.getAttribute('aria-label')
             || '';
-        const collapseLabel = container.getAttribute('data-collapse-label')
+        var collapseLabel = container.getAttribute('data-collapse-label')
             || toggleAll.dataset.collapseLabel
             || expandLabel;
 
@@ -76,25 +76,25 @@ define([], function() {
         toggleAll.classList.toggle('is-expanded', !collapsed);
     };
 
-    const collapseList = (container, list, toggleAll) => {
-        const collapsedHeight = getCollapsedHeight(list);
+    var collapseList = function(container, list, toggleAll) {
+        var collapsedHeight = getCollapsedHeight(list);
         list.classList.add('is-transitioning');
         list.classList.add('is-collapsed');
         list.style.maxHeight = collapsedHeight + 'px';
         updateToggleAllLabel(container, toggleAll, true);
-        window.setTimeout(() => {
+        window.setTimeout(function() {
             list.classList.remove('is-transitioning');
         }, 300);
     };
 
-    const expandList = (container, list, toggleAll) => {
+    var expandList = function(container, list, toggleAll) {
         list.classList.add('is-transitioning');
-        const targetHeight = list.scrollHeight;
+        var targetHeight = list.scrollHeight;
         list.style.maxHeight = targetHeight + 'px';
         list.classList.remove('is-collapsed');
         updateToggleAllLabel(container, toggleAll, false);
 
-        const handleTransitionEnd = (event) => {
+        var handleTransitionEnd = function(event) {
             if (event.target !== list) {
                 return;
             }
@@ -104,14 +104,14 @@ define([], function() {
         };
 
         list.addEventListener('transitionend', handleTransitionEnd);
-        window.setTimeout(() => {
+        window.setTimeout(function() {
             list.classList.remove('is-transitioning');
             list.removeEventListener('transitionend', handleTransitionEnd);
         }, 350);
     };
 
-    const toggleList = (container, list, toggleAll) => {
-        const isCollapsed = list.classList.contains('is-collapsed');
+    var toggleList = function(container, list, toggleAll) {
+        var isCollapsed = list.classList.contains('is-collapsed');
         if (isCollapsed) {
             expandList(container, list, toggleAll);
         } else {
@@ -119,7 +119,7 @@ define([], function() {
         }
     };
 
-    const prepareList = (container, list, toggleAll) => {
+    var prepareList = function(container, list, toggleAll) {
         if (!list || !toggleAll || !list.dataset.collapsible) {
             return;
         }
@@ -130,43 +130,43 @@ define([], function() {
             collapseList(container, list, toggleAll);
         }
 
-        toggleAll.addEventListener('click', (event) => {
+        toggleAll.addEventListener('click', function(event) {
             event.preventDefault();
             toggleList(container, list, toggleAll);
         });
     };
 
-    const enhanceContainer = (container) => {
+    var enhanceContainer = function(container) {
         if (container.dataset.subtasksToggleInitialised) {
             return;
         }
         container.dataset.subtasksToggleInitialised = 'true';
 
-        container.querySelectorAll(selectors.toggle).forEach((button) => {
+        container.querySelectorAll(selectors.toggle).forEach(function(button) {
             if (button.dataset.subtaskToggleInitialised) {
                 return;
             }
             button.dataset.subtaskToggleInitialised = 'true';
 
-            const panel = getPanel(button);
+            var panel = getPanel(button);
             setExpandedState(button, panel, false);
 
-            button.addEventListener('click', (event) => {
+            button.addEventListener('click', function(event) {
                 event.preventDefault();
                 togglePanel(button);
             });
         });
 
-        const list = container.querySelector(selectors.list);
-        const toggleAll = container.querySelector(selectors.toggleAll);
+        var list = container.querySelector(selectors.list);
+        var toggleAll = container.querySelector(selectors.toggleAll);
         prepareList(container, list, toggleAll);
     };
 
-    const init = () => {
+    var init = function() {
         document.querySelectorAll(selectors.container).forEach(enhanceContainer);
     };
 
     return {
-        init,
+        init: init,
     };
 });

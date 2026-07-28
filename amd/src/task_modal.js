@@ -1,33 +1,33 @@
 define(['core/modal_factory', 'core/modal_events', 'core/notification'], function(ModalFactory, ModalEvents, Notification) {
-    const closeMessageType = 'local_dutydesk_close_modal';
-    const selectors = {
+    var closeMessageType = 'local_dutydesk_close_modal';
+    var selectors = {
         trigger: '[data-action="new-task"], [data-action="edit-task"], [data-action="edit-subtask"], [data-action="new-subtask"]',
         cancel: 'button[name="cancel"], input[name="cancel"]',
     };
 
-    let initialised = false;
-    let closeListenerInitialised = false;
-    let activeModal = null;
-    let focusTarget = null;
+    var initialised = false;
+    var closeListenerInitialised = false;
+    var activeModal = null;
+    var focusTarget = null;
 
-    const buildIframeHtml = function(url, title) {
-        const safeTitle = title || '';
+    var buildIframeHtml = function(url, title) {
+        var safeTitle = title || '';
         return '<iframe src="' + url + '" title="' + safeTitle.replace(/"/g, '&quot;') + '" '
             + 'style="width:100%; height:84vh; border:0;" loading="lazy"></iframe>';
     };
 
-    const reloadWithFocus = function() {
+    var reloadWithFocus = function() {
         if (!focusTarget || !focusTarget.id) {
             window.location.reload();
             return;
         }
 
-        const url = new URL(window.location.href);
+        var url = new URL(window.location.href);
         url.searchParams.set('focus', focusTarget.id);
         url.searchParams.set('forcefirst', '1');
         url.hash = 'task-' + focusTarget.id;
 
-        const targetUrl = url.toString();
+        var targetUrl = url.toString();
         if (targetUrl === window.location.href) {
             window.location.reload();
             return;
@@ -35,7 +35,7 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         window.location.href = targetUrl;
     };
 
-    const registerCloseListener = function() {
+    var registerCloseListener = function() {
         if (closeListenerInitialised) {
             return;
         }
@@ -53,14 +53,14 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         });
     };
 
-    const openModal = function(trigger) {
-        const url = trigger.dataset.modalUrl || trigger.getAttribute('href');
+    var openModal = function(trigger) {
+        var url = trigger.dataset.modalUrl || trigger.getAttribute('href');
         if (!url) {
             return;
         }
 
-        const title = trigger.dataset.modalTitle || trigger.textContent.trim();
-        const taskCard = trigger.closest('[data-task-id]');
+        var title = trigger.dataset.modalTitle || trigger.textContent.trim();
+        var taskCard = trigger.closest('[data-task-id]');
         focusTarget = taskCard
             ? {type: 'task', id: taskCard.getAttribute('data-task-id')}
             : null;
@@ -83,7 +83,7 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         }).catch(Notification.exception);
     };
 
-    const closeParentModal = function() {
+    var closeParentModal = function() {
         if (window.top === window || !window.parent) {
             return;
         }
@@ -95,7 +95,7 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         }
     };
 
-    const init = function() {
+    var init = function() {
         if (initialised) {
             return;
         }
@@ -103,7 +103,7 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         registerCloseListener();
 
         document.addEventListener('click', function(event) {
-            const trigger = event.target.closest(selectors.trigger);
+            var trigger = event.target.closest(selectors.trigger);
             if (!trigger) {
                 return;
             }
@@ -116,7 +116,7 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         init: init,
         initEmbedded: function() {
             document.addEventListener('click', function(event) {
-                const trigger = event.target.closest(selectors.cancel);
+                var trigger = event.target.closest(selectors.cancel);
                 if (!trigger) {
                     return;
                 }
@@ -125,7 +125,7 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
             });
 
             document.addEventListener('submit', function(event) {
-                const submitter = event.submitter || document.activeElement;
+                var submitter = event.submitter || document.activeElement;
                 if (!submitter || submitter.name !== 'cancel') {
                     return;
                 }

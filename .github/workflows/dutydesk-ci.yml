@@ -17,13 +17,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - moodle: MOODLE_401_STABLE
-            php: '8.1'
-            node: '16'
-            db: mysqli
-            dbname: moodle_401_mysql
-            dbuser: root
-            dbpass: ''
           - moodle: MOODLE_405_STABLE
             php: '8.3'
             node: '22'
@@ -31,13 +24,6 @@ jobs:
             dbname: moodle_405_mysql
             dbuser: root
             dbpass: ''
-          - moodle: MOODLE_401_STABLE
-            php: '8.1'
-            node: '16'
-            db: pgsql
-            dbname: moodle_401_pgsql
-            dbuser: moodle
-            dbpass: moodle
           - moodle: MOODLE_405_STABLE
             php: '8.3'
             node: '22'

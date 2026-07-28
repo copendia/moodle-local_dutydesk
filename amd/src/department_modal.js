@@ -1,36 +1,36 @@
 define(['core/modal_factory', 'core/modal_events', 'core/notification'], function(ModalFactory, ModalEvents, Notification) {
-    const closeMessageType = 'local_dutydesk_close_modal';
-    const selectors = {
+    var closeMessageType = 'local_dutydesk_close_modal';
+    var selectors = {
         trigger: '[data-action="new-department"], [data-action="edit-department"]',
         cancel: 'button[name="cancel"], input[name="cancel"]',
     };
 
-    let parentInitialised = false;
-    let embeddedInitialised = false;
-    let closeListenerInitialised = false;
-    let activeModal = null;
-    let focusTarget = null;
+    var parentInitialised = false;
+    var embeddedInitialised = false;
+    var closeListenerInitialised = false;
+    var activeModal = null;
+    var focusTarget = null;
 
-    const buildIframeHtml = function(url, title) {
-        const safeTitle = title || '';
+    var buildIframeHtml = function(url, title) {
+        var safeTitle = title || '';
         return '<iframe src="' + url + '" title="' + safeTitle.replace(/"/g, '&quot;') + '" '
             + 'style="width:100%; height:78vh; border:0;" loading="lazy"></iframe>';
     };
 
-    const reloadWithFocus = function() {
+    var reloadWithFocus = function() {
         if (!focusTarget || !focusTarget.id) {
             window.location.reload();
             return;
         }
 
-        const url = new URL(window.location.href);
+        var url = new URL(window.location.href);
         url.searchParams.set('focus', focusTarget.id);
         url.searchParams.set('modalreload', Date.now().toString());
         url.hash = 'department-' + focusTarget.id;
         window.location.href = url.toString();
     };
 
-    const registerCloseListener = function() {
+    var registerCloseListener = function() {
         if (closeListenerInitialised) {
             return;
         }
@@ -48,19 +48,19 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         });
     };
 
-    const openModal = function(trigger) {
+    var openModal = function(trigger) {
         if (!trigger) {
             return;
         }
 
-        const url = trigger.dataset.modalUrl || trigger.getAttribute('href');
+        var url = trigger.dataset.modalUrl || trigger.getAttribute('href');
         if (!url) {
             return;
         }
 
-        const title = trigger.dataset.modalTitle || trigger.textContent.trim();
-        const departmentCard = trigger.closest('[id^="department-"]');
-        const departmentId = departmentCard ? String(departmentCard.id).replace(/^department-/, '') : '';
+        var title = trigger.dataset.modalTitle || trigger.textContent.trim();
+        var departmentCard = trigger.closest('[id^="department-"]');
+        var departmentId = departmentCard ? String(departmentCard.id).replace(/^department-/, '') : '';
         focusTarget = departmentId ? {type: 'department', id: departmentId} : null;
 
         ModalFactory.create({
@@ -81,7 +81,7 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         }).catch(Notification.exception);
     };
 
-    const closeParentModal = function() {
+    var closeParentModal = function() {
         if (window.top === window || !window.parent) {
             return;
         }
@@ -93,14 +93,14 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         }
     };
 
-    const initParent = function() {
+    var initParent = function() {
         if (parentInitialised) {
             return;
         }
         parentInitialised = true;
         registerCloseListener();
         document.addEventListener('click', function(event) {
-            const trigger = event.target.closest(selectors.trigger);
+            var trigger = event.target.closest(selectors.trigger);
             if (!trigger) {
                 return;
             }
@@ -109,14 +109,14 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         });
     };
 
-    const initEmbedded = function() {
+    var initEmbedded = function() {
         if (embeddedInitialised) {
             return;
         }
         embeddedInitialised = true;
 
         document.addEventListener('click', function(event) {
-            const trigger = event.target.closest(selectors.cancel);
+            var trigger = event.target.closest(selectors.cancel);
             if (!trigger) {
                 return;
             }
@@ -125,7 +125,7 @@ define(['core/modal_factory', 'core/modal_events', 'core/notification'], functio
         });
 
         document.addEventListener('submit', function(event) {
-            const submitter = event.submitter || document.activeElement;
+            var submitter = event.submitter || document.activeElement;
             if (!submitter || submitter.name !== 'cancel') {
                 return;
             }
