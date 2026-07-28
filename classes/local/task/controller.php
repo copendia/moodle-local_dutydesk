@@ -776,7 +776,14 @@ class controller {
                 if ($tasksdatasql !== '') {
                     $records = $DB->get_records_sql($tasksdatasql, $tasksdataparams, $offset, $perpage);
                 } else if (!empty($taskconditions)) {
-                    $records = $DB->get_records('local_dutydesk_task', $taskconditions, 'title ASC, id ASC', '*', $offset, $perpage);
+                    $records = $DB->get_records(
+                        'local_dutydesk_task',
+                        $taskconditions,
+                        'title ASC, id ASC',
+                        '*',
+                        $offset,
+                        $perpage
+                    );
                 } else {
                     $records = $DB->get_records('local_dutydesk_task', null, 'title ASC, id ASC', '*', $offset, $perpage);
                 }
@@ -847,7 +854,12 @@ class controller {
                     $assignmentsbytask[$assignment->taskid] = $assignment;
                 }
 
-                $subtaskrecords = $DB->get_records_select('local_dutydesk_subtask', "taskid {$insql}", $params, 'sortorder ASC, id ASC');
+                $subtaskrecords = $DB->get_records_select(
+                    'local_dutydesk_subtask',
+                    "taskid {$insql}",
+                    $params,
+                    'sortorder ASC, id ASC'
+                );
                 foreach ($subtaskrecords as $subtask) {
                     $subtasksbytask[$subtask->taskid][] = $subtask;
                 }

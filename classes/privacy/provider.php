@@ -25,8 +25,6 @@
 
 namespace local_dutydesk\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\approved_userlist;
@@ -43,10 +41,9 @@ use core_privacy\local\request\writer;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
-        \core_privacy\local\metadata\provider,
-        \core_privacy\local\request\core_userlist_provider,
-        \core_privacy\local\request\plugin\provider {
-
+    \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\core_userlist_provider,
+    \core_privacy\local\request\plugin\provider {
     /**
      * Returns metadata about stored user data.
      *
@@ -150,17 +147,25 @@ class provider implements
             }
 
             $data = (object) [
-                'departmentmanagerassignments' => array_values($DB->get_records('local_dutydesk_deptmgr',
-                    ['userid' => $userid])),
-                'assigneddepartmentmanagers' => array_values($DB->get_records('local_dutydesk_deptmgr',
-                    ['assignedby' => $userid])),
+                'departmentmanagerassignments' => array_values($DB->get_records(
+                    'local_dutydesk_deptmgr',
+                    ['userid' => $userid]
+                )),
+                'assigneddepartmentmanagers' => array_values($DB->get_records(
+                    'local_dutydesk_deptmgr',
+                    ['assignedby' => $userid]
+                )),
                 'positions' => array_values($DB->get_records('local_dutydesk_position', ['primaryuserid' => $userid])),
                 'userinfo' => array_values($DB->get_records('local_dutydesk_userinfo', ['userid' => $userid])),
                 'taskassignments' => array_values($DB->get_records('local_dutydesk_taskassign', ['assignedby' => $userid])),
-                'deputyassignments' => array_values($DB->get_records('local_dutydesk_posdeputy',
-                    ['userid' => $userid])),
-                'assigneddeputies' => array_values($DB->get_records('local_dutydesk_posdeputy',
-                    ['assignedby' => $userid])),
+                'deputyassignments' => array_values($DB->get_records(
+                    'local_dutydesk_posdeputy',
+                    ['userid' => $userid]
+                )),
+                'assigneddeputies' => array_values($DB->get_records(
+                    'local_dutydesk_posdeputy',
+                    ['assignedby' => $userid]
+                )),
                 'comments' => array_values($DB->get_records('local_dutydesk_comment', ['userid' => $userid])),
                 'imports' => array_values($DB->get_records('local_dutydesk_import', ['importedby' => $userid])),
                 'taskhistory' => array_values($DB->get_records('local_dutydesk_taskhist', ['userid' => $userid])),

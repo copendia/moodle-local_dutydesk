@@ -165,7 +165,13 @@ class form_handler {
         }
 
         $departmentoptions = [];
-        $departmentrecords = $DB->get_records_list('local_dutydesk_department', 'id', $manageddepartmentids, 'name ASC', 'id, name');
+        $departmentrecords = $DB->get_records_list(
+            'local_dutydesk_department',
+            'id',
+            $manageddepartmentids,
+            'name ASC',
+            'id, name'
+        );
         foreach ($departmentrecords as $dept) {
             $departmentoptions[$dept->id] = $dept->name;
         }
