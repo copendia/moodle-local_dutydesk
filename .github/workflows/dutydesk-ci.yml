@@ -78,7 +78,7 @@ jobs:
       DB_USER: ${{ matrix.dbuser }}
       DB_PASS: ${{ matrix.dbpass }}
       MOODLE_BRANCH: ${{ matrix.moodle }}
-      CI_DIR: ${{ runner.temp }}/moodle-plugin-ci
+      CI_DIR: /tmp/moodle-plugin-ci
       MOODLE_DIR: ${{ github.workspace }}/moodle-ci
       PLUGIN_DIR: ${{ github.workspace }}
       INSTALLED_PLUGIN_DIR: ${{ github.workspace }}/moodle-ci/local/dutydesk
