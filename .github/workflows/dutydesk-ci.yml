@@ -136,6 +136,10 @@ jobs:
         run: >
           "$CI_DIR/bin/moodle-plugin-ci" grunt --moodle="$MOODLE_DIR" --tasks=amd "$INSTALLED_PLUGIN_DIR"
 
+      - name: Initialise PHPUnit test site
+        run: >
+          php "$MOODLE_DIR/admin/tool/phpunit/cli/init.php" --disable-composer
+
       - name: PHPUnit
         run: >
           "$CI_DIR/bin/moodle-plugin-ci" phpunit --moodle="$MOODLE_DIR" "$INSTALLED_PLUGIN_DIR"
