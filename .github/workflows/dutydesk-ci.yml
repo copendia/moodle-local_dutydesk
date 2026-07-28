@@ -79,9 +79,9 @@ jobs:
       DB_PASS: ${{ matrix.dbpass }}
       MOODLE_BRANCH: ${{ matrix.moodle }}
       CI_DIR: /tmp/moodle-plugin-ci
-      MOODLE_DIR: ${{ github.workspace }}/moodle-ci
+      MOODLE_DIR: /tmp/moodle-ci
       PLUGIN_DIR: ${{ github.workspace }}
-      INSTALLED_PLUGIN_DIR: ${{ github.workspace }}/moodle-ci/local/dutydesk
+      INSTALLED_PLUGIN_DIR: /tmp/moodle-ci/local/dutydesk
 
     steps:
       - name: Checkout repository
