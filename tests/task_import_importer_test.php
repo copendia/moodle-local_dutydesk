@@ -161,7 +161,9 @@ final class task_import_importer_test extends \advanced_testcase {
 
         $this->assertSame(2, $result['tasks']);
         $this->assertSame(1, $result['categories']);
-        $this->assertSame($departmentid, (int)$DB->get_field('local_dutydesk_category', 'departmentid', ['id' => $legacycategoryid]));
+        $this->assertSame($departmentid, (int)$DB->get_field('local_dutydesk_category', 'departmentid', [
+            'id' => $legacycategoryid,
+        ]));
 
         $firsttask = $DB->get_record('local_dutydesk_task', ['title' => 'Posteingang fachlich bewerten'], '*', MUST_EXIST);
         $secondtask = $DB->get_record('local_dutydesk_task', ['title' => 'Rueckmeldung erstellen'], '*', MUST_EXIST);

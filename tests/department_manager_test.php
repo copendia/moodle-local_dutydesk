@@ -67,8 +67,12 @@ final class department_manager_test extends \advanced_testcase {
         $this->assertSame((int)$manageruser->id, (int)$assignment->userid);
         $this->assertSame((int)$USER->id, (int)$assignment->assignedby);
 
-        $this->assertSame($departmentid, (int)$DB->get_field('local_dutydesk_category', 'departmentid', ['id' => $categoryid]));
-        $this->assertSame($otherdepartmentid, (int)$DB->get_field('local_dutydesk_category', 'departmentid', ['id' => $othercategoryid]));
+        $this->assertSame($departmentid, (int)$DB->get_field('local_dutydesk_category', 'departmentid', [
+            'id' => $categoryid,
+        ]));
+        $this->assertSame($otherdepartmentid, (int)$DB->get_field('local_dutydesk_category', 'departmentid', [
+            'id' => $othercategoryid,
+        ]));
     }
 
     /**
