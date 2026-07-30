@@ -19,10 +19,6 @@ namespace local_dutydesk\local\task_import;
 // phpcs:ignore moodle.Files.MoodleInternal.MoodleInternalNotNeeded
 defined('MOODLE_INTERNAL') || die();
 
-
-global $CFG;
-require_once($CFG->libdir . '/phpspreadsheet/vendor/autoload.php');
-
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -67,6 +63,7 @@ class template_manager {
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
+        spreadsheet_loader::load();
         $writer = new Xlsx(self::build_xlsx_template($rows));
         $writer->save('php://output');
         die;
