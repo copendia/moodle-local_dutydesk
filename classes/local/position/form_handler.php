@@ -21,9 +21,6 @@ defined('MOODLE_INTERNAL') || die();
 
 
 $pluginroot = dirname(__DIR__, 3);
-require_once($pluginroot . '/classes/form/position_form.php');
-require_once($pluginroot . '/classes/local/position/permissions.php');
-require_once($pluginroot . '/classes/local/position/manager.php');
 require_once($pluginroot . '/lib.php');
 
 use context;

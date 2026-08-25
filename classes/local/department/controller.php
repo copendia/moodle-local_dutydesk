@@ -29,11 +29,6 @@ defined('MOODLE_INTERNAL') || die();
 
 
 $pluginroot = dirname(__DIR__, 3);
-require_once($pluginroot . '/classes/local/department/form_handler.php');
-require_once($pluginroot . '/classes/local/department/manager.php');
-require_once($pluginroot . '/classes/local/department/presenter.php');
-require_once($pluginroot . '/classes/local/department/repository.php');
-require_once($pluginroot . '/classes/output/department_page.php');
 require_once($pluginroot . '/lib.php');
 
 use context;

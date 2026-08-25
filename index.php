@@ -24,9 +24,6 @@
 
 require('../../config.php');
 require_once($CFG->libdir . '/filelib.php');
-require_once(__DIR__ . '/classes/local/dashboard/manager.php');
-require_once(__DIR__ . '/classes/local/dashboard/presenter.php');
-require_once(__DIR__ . '/classes/output/dashboard_page.php');
 require_once(__DIR__ . '/lib.php');
 require_login();
 
