@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<libraries>
+    <!--
+        DutyDesk does not bundle third-party libraries.
+        Spreadsheet import/export uses Moodle core's bundled PhpSpreadsheet library
+        from $CFG->libdir/phpspreadsheet, which is documented by Moodle core.
+    -->
+</libraries>

@@ -45,7 +45,6 @@ class dashboard_page {
         $PAGE->set_title(get_string('assignedpositions', 'local_dutydesk'));
         $PAGE->set_heading(get_string('assignedpositionsheading', 'local_dutydesk'));
         $PAGE->add_body_class('limitedwidth');
-        $PAGE->requires->css('/local/dutydesk/styles.css');
         $PAGE->requires->js_call_amd('local_dutydesk/subtasks_toggle', 'init');
     }
 

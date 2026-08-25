@@ -29,11 +29,6 @@ defined('MOODLE_INTERNAL') || die();
 
 
 $pluginroot = dirname(__DIR__, 3);
-require_once($pluginroot . '/classes/local/department/form_handler.php');
-require_once($pluginroot . '/classes/local/department/manager.php');
-require_once($pluginroot . '/classes/local/department/presenter.php');
-require_once($pluginroot . '/classes/local/department/repository.php');
-require_once($pluginroot . '/classes/output/department_page.php');
 require_once($pluginroot . '/lib.php');
 
 use context;
@@ -191,7 +186,6 @@ class controller {
         $PAGE->set_heading(get_string('departments', 'local_dutydesk'));
         $PAGE->add_body_class('limitedwidth');
         $PAGE->add_body_class('local-dutydesk-hide-required-note');
-        $PAGE->requires->css('/local/dutydesk/styles.css');
         $PAGE->requires->js_call_amd('local_dutydesk/department_modal', 'initParent');
     }
 

@@ -19,11 +19,6 @@ namespace local_dutydesk\local\department;
 // phpcs:ignore moodle.Files.MoodleInternal.MoodleInternalNotNeeded
 defined('MOODLE_INTERNAL') || die();
 
-
-$pluginroot = dirname(__DIR__, 3);
-require_once($pluginroot . '/classes/form/department_form.php');
-require_once($pluginroot . '/classes/local/department/manager.php');
-
 use context;
 use moodle_url;
 use required_capability_exception;

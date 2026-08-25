@@ -44,7 +44,6 @@ class task_page {
         $PAGE->set_url(new moodle_url('/local/dutydesk/tasks.php'));
         $PAGE->set_title(get_string('tasks', 'local_dutydesk'));
         $PAGE->set_heading(get_string('tasks', 'local_dutydesk'));
-        $PAGE->requires->css('/local/dutydesk/styles.css');
         $PAGE->requires->js_call_amd('local_dutydesk/subtasks_toggle', 'init');
         $PAGE->requires->js_call_amd('local_dutydesk/task_filter', 'init');
         $PAGE->requires->js_call_amd('local_dutydesk/task_history', 'init');

@@ -19,9 +19,6 @@ namespace local_dutydesk\local\task_import;
 // phpcs:ignore moodle.Files.MoodleInternal.MoodleInternalNotNeeded
 defined('MOODLE_INTERNAL') || die();
 
-
-global $CFG;
-require_once($CFG->libdir . '/phpspreadsheet/vendor/autoload.php');
 require_once(dirname(__DIR__, 3) . '/lib.php');
 
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
@@ -104,6 +101,8 @@ class importer {
      * @return array
      */
     public static function read_rows(string $filepath, string $filename = ''): array {
+        spreadsheet_loader::load();
+
         $extension = \core_text::strtolower(pathinfo($filename, PATHINFO_EXTENSION));
         $header = file_get_contents($filepath, false, null, 0, 4);
 

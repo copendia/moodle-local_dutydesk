@@ -29,11 +29,6 @@ defined('MOODLE_INTERNAL') || die();
 
 
 $pluginroot = dirname(__DIR__, 3);
-require_once($pluginroot . '/classes/local/task_import/form_factory.php');
-require_once($pluginroot . '/classes/local/task_import/importer.php');
-require_once($pluginroot . '/classes/local/task_import/session_store.php');
-require_once($pluginroot . '/classes/local/task_import/template_manager.php');
-require_once($pluginroot . '/classes/output/task_import_page.php');
 require_once($pluginroot . '/lib.php');
 
 use local_dutydesk\output\task_import_page;
@@ -112,7 +107,6 @@ class controller {
         $PAGE->set_url(new moodle_url('/local/dutydesk/task_import.php'));
         $PAGE->set_title(get_string('taskimport', 'local_dutydesk'));
         $PAGE->set_heading(get_string('taskimport', 'local_dutydesk'));
-        $PAGE->requires->css('/local/dutydesk/styles.css');
         $PAGE->add_body_class('limitedwidth');
     }
 

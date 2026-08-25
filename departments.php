@@ -23,7 +23,6 @@
  */
 
 require('../../config.php');
-require_once(__DIR__ . '/classes/local/department/controller.php');
 require_login();
 
 \local_dutydesk\local\department\controller::execute();

@@ -15,14 +15,21 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * DutyDesk local plugin.
+ * External service declarations for DutyDesk.
  *
  * @package    local_dutydesk
  * @copyright  2026 onwards Copendia GmbH
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../../config.php');
-require_login();
+defined('MOODLE_INTERNAL') || die();
 
-\local_dutydesk\local\position\controller::execute();
+$functions = [
+    'local_dutydesk_get_task_history' => [
+        'classname' => 'local_dutydesk\external\get_task_history',
+        'description' => 'Returns rendered task history modal content.',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => 'local/dutydesk:viewown, local/dutydesk:managepositions, local/dutydesk:manageall',
+    ],
+];

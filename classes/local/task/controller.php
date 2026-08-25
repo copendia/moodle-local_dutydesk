@@ -36,12 +36,6 @@ use stdClass;
 
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->dirroot . '/repository/lib.php');
-require_once(dirname(__DIR__, 3) . '/classes/form/task_form.php');
-require_once(dirname(__DIR__, 3) . '/classes/local/task/manager.php');
-require_once(dirname(__DIR__, 3) . '/classes/local/task/permissions.php');
-require_once(dirname(__DIR__, 3) . '/classes/local/task/presenter.php');
-require_once(dirname(__DIR__, 3) . '/classes/local/task/repository.php');
-require_once(dirname(__DIR__, 3) . '/classes/output/task_page.php');
 require_once(dirname(__DIR__, 3) . '/lib.php');
 
 /**
@@ -472,8 +466,6 @@ class controller {
                                 $OUTPUT->render_from_template('local_dutydesk/task_list', [
                                     'displaysearch' => false,
                                     'tasks' => [$previewdata],
-                                    'sesskey' => sesskey(),
-                                    'historyendpoint' => (new moodle_url('/local/dutydesk/task_history.php'))->out(false),
                                 ]),
                                 'local-dutydesk-task-edit-preview mb-4'
                             );

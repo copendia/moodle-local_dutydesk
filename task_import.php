@@ -23,7 +23,6 @@
  */
 
 require('../../config.php');
-require_once(__DIR__ . '/classes/local/task_import/controller.php');
 require_login();
 
 \local_dutydesk\local\task_import\controller::execute();

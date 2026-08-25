@@ -29,13 +29,6 @@ defined('MOODLE_INTERNAL') || die();
 
 
 $pluginroot = dirname(__DIR__, 3);
-require_once($pluginroot . '/classes/local/position/form_handler.php');
-require_once($pluginroot . '/classes/local/position/permissions.php');
-require_once($pluginroot . '/classes/local/position/repository.php');
-require_once($pluginroot . '/classes/local/position/manager.php');
-require_once($pluginroot . '/classes/local/position/visibility.php');
-require_once($pluginroot . '/classes/local/position/presenter.php');
-require_once($pluginroot . '/classes/output/position_page.php');
 require_once($pluginroot . '/lib.php');
 
 use context;

@@ -25,7 +25,6 @@
 require('../../config.php');
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->dirroot . '/repository/lib.php');
-require_once(__DIR__ . '/classes/form/subtask_form.php');
 require_once(__DIR__ . '/lib.php');
 
 require_login();
@@ -111,7 +110,6 @@ $PAGE->set_title(get_string('subtasks', 'local_dutydesk'));
 $PAGE->set_heading(format_string($task->title));
 $PAGE->add_body_class('limitedwidth');
 $PAGE->set_pagelayout($ismodal ? 'embedded' : 'standard');
-$PAGE->requires->css('/local/dutydesk/styles.css');
 if ($ismodal) {
     $PAGE->requires->js_init_code(<<<'JS'
 (function() {
@@ -422,8 +420,6 @@ if (!$ismodal) {
             $OUTPUT->render_from_template('local_dutydesk/task_list', [
                 'displaysearch' => false,
                 'tasks' => [$taskpreview],
-                'sesskey' => sesskey(),
-                'historyendpoint' => (new moodle_url('/local/dutydesk/task_history.php'))->out(false),
             ]),
             'local-dutydesk-task-edit-preview mt-4'
         );

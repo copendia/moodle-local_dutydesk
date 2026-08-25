@@ -19,10 +19,6 @@ namespace local_dutydesk\local\task_import;
 // phpcs:ignore moodle.Files.MoodleInternal.MoodleInternalNotNeeded
 defined('MOODLE_INTERNAL') || die();
 
-
-global $CFG;
-require_once(dirname(__DIR__, 3) . '/classes/form/task_import_form.php');
-
 use local_dutydesk\form\task_import_form;
 use moodle_url;
 

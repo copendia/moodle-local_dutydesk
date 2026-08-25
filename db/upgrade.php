@@ -37,7 +37,7 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
 
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 20250903036) {
+    if ($oldversion < 2026072801) {
         $table = new xmldb_table('dutydesk_subtask');
         $oldfield = new xmldb_field('order', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'title');
 
@@ -45,10 +45,10 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             $dbman->rename_field($table, $oldfield, 'sortorder');
         }
 
-        upgrade_plugin_savepoint(true, 20250903036, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072801, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903037) {
+    if ($oldversion < 2026072802) {
         $table = new xmldb_table('dutydesk_task');
         $field = new xmldb_field('descriptionformat', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '1', 'description');
 
@@ -58,10 +58,10 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
 
         $DB->set_field('dutydesk_task', 'descriptionformat', FORMAT_HTML);
 
-        upgrade_plugin_savepoint(true, 20250903037, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072802, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903038) {
+    if ($oldversion < 2026072803) {
         $table = new xmldb_table('dutydesk_subtask');
         $description = new xmldb_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null, 'title');
         $descriptionformat = new xmldb_field(
@@ -86,10 +86,10 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
 
         $DB->set_field('dutydesk_subtask', 'descriptionformat', FORMAT_HTML);
 
-        upgrade_plugin_savepoint(true, 20250903038, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072803, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903039) {
+    if ($oldversion < 2026072804) {
         $positiontable = new xmldb_table('dutydesk_position');
         $descriptionfield = new xmldb_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null, 'departmentid');
         if ($dbman->table_exists($positiontable) && !$dbman->field_exists($positiontable, $descriptionfield)) {
@@ -176,14 +176,14 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             }
         }
 
-        upgrade_plugin_savepoint(true, 20250903039, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072804, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903040) {
-        upgrade_plugin_savepoint(true, 20250903040, 'local', 'dutydesk');
+    if ($oldversion < 2026072805) {
+        upgrade_plugin_savepoint(true, 2026072805, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903041) {
+    if ($oldversion < 2026072806) {
         // Register new capabilities.
         update_capabilities('local_dutydesk');
 
@@ -203,10 +203,10 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             assign_capability('local/dutydesk:manageown', CAP_ALLOW, $userrole->id, context_system::instance(), true);
         }
 
-        upgrade_plugin_savepoint(true, 20250903041, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072806, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903042) {
+    if ($oldversion < 2026072807) {
         $table = new xmldb_table('dutydesk_department_manager');
 
         if (!$dbman->table_exists($table)) {
@@ -222,10 +222,10 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             $dbman->create_table($table);
         }
 
-        upgrade_plugin_savepoint(true, 20250903042, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072807, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903043) {
+    if ($oldversion < 2026072808) {
         $table = new xmldb_table('dutydesk_task_history');
 
         if (!$dbman->table_exists($table)) {
@@ -242,10 +242,10 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             $dbman->create_table($table);
         }
 
-        upgrade_plugin_savepoint(true, 20250903043, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072808, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903044) {
+    if ($oldversion < 2026072809) {
         $table = new xmldb_table('dutydesk_taskassignment');
         $field = new xmldb_field('workloadpercent', XMLDB_TYPE_INTEGER, '3', null, null, null, null, 'positionid');
 
@@ -253,14 +253,14 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_plugin_savepoint(true, 20250903044, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072809, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903047) {
-        upgrade_plugin_savepoint(true, 20250903047, 'local', 'dutydesk');
+    if ($oldversion < 2026072810) {
+        upgrade_plugin_savepoint(true, 2026072810, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903048) {
+    if ($oldversion < 2026072811) {
         $table = new xmldb_table('dutydesk_position');
         $field = new xmldb_field('archivedtime', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'archived');
 
@@ -275,15 +275,15 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
                 AND (archivedtime IS NULL OR archivedtime = 0)"
         );
 
-        upgrade_plugin_savepoint(true, 20250903048, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072811, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903049) {
+    if ($oldversion < 2026072812) {
         update_capabilities('local_dutydesk');
-        upgrade_plugin_savepoint(true, 20250903049, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072812, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903050) {
+    if ($oldversion < 2026072813) {
         $table = new xmldb_table('dutydesk_position');
         $field = new xmldb_field('isvacant', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'archivedtime');
 
@@ -291,10 +291,10 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_plugin_savepoint(true, 20250903050, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072813, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903051) {
+    if ($oldversion < 2026072814) {
         $table = new xmldb_table('dutydesk_position');
         $field = new xmldb_field(
             'positiontype',
@@ -311,10 +311,10 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_plugin_savepoint(true, 20250903051, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072814, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903052) {
+    if ($oldversion < 2026072815) {
         $table = new xmldb_table('dutydesk_category');
         $field = new xmldb_field('departmentid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'name');
 
@@ -322,10 +322,10 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_plugin_savepoint(true, 20250903052, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072815, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903053) {
+    if ($oldversion < 2026072816) {
         $olddeputytable = new xmldb_table('dutydesk_position_deputyassigment');
         $newdeputytable = new xmldb_table('dutydesk_position_deputy');
 
@@ -333,10 +333,10 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             $dbman->rename_table($olddeputytable, 'dutydesk_position_deputy');
         }
 
-        upgrade_plugin_savepoint(true, 20250903053, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072816, 'local', 'dutydesk');
     }
 
-    if ($oldversion < 20250903054) {
+    if ($oldversion < 2026072817) {
         $renames = [
             'dutydesk_department' => 'local_dutydesk_department',
             'dutydesk_department_manager' => 'local_dutydesk_deptmgr',
@@ -361,7 +361,7 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             }
         }
 
-        upgrade_plugin_savepoint(true, 20250903054, 'local', 'dutydesk');
+        upgrade_plugin_savepoint(true, 2026072817, 'local', 'dutydesk');
     }
 
     return true;

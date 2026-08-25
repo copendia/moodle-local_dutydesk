@@ -142,8 +142,6 @@ class presenter {
                 $task['searchtext'] = $task['searchtext'] ?? '';
                 return $task;
             }, $tasksdata),
-            'sesskey' => sesskey(),
-            'historyendpoint' => (new moodle_url('/local/dutydesk/task_history.php'))->out(false),
         ];
 
         if ($categoryfilterdata !== null) {

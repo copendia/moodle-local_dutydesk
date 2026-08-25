@@ -32,7 +32,6 @@ if ($israwajax && !$israwmodaledit) {
 
 // phpcs:disable moodle.Files.RequireLogin.Missing
 require('../../config.php');
-require_once(__DIR__ . '/classes/local/task/controller.php');
 
 \local_dutydesk\local\task\controller::execute();
 // phpcs:enable moodle.Files.RequireLogin.Missing
