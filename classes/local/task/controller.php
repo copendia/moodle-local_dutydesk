@@ -466,8 +466,6 @@ class controller {
                                 $OUTPUT->render_from_template('local_dutydesk/task_list', [
                                     'displaysearch' => false,
                                     'tasks' => [$previewdata],
-                                    'sesskey' => sesskey(),
-                                    'historyendpoint' => (new moodle_url('/local/dutydesk/task_history.php'))->out(false),
                                 ]),
                                 'local-dutydesk-task-edit-preview mb-4'
                             );

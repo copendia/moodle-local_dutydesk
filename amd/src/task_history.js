@@ -5,25 +5,17 @@
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-define(['core/modal_factory', 'core/notification'], function(ModalFactory, Notification) {
+define(['core/modal_factory', 'core/notification', 'core/ajax'], function(ModalFactory, Notification, Ajax) {
     var SELECTOR_CONTAINER = '.local-dutydesk-task-list';
     var SELECTOR_BUTTON = '[data-action="view-task-history"]';
 
-    var fetchHistory = function(endpoint, params) {
-        var url = new URL(endpoint, M.cfg.wwwroot);
-        Object.keys(params).forEach(function(key) {
-            url.searchParams.append(key, params[key]);
-        });
-        return fetch(url.toString(), {
-            method: 'GET',
-            credentials: 'same-origin',
-            headers: {'X-Requested-With': 'XMLHttpRequest'}
-        }).then(function(response) {
-            if (!response.ok) {
-                throw new Error(response.statusText);
-            }
-            return response.json();
-        });
+    var fetchHistory = function(taskid) {
+        return Ajax.call([{
+            methodname: 'local_dutydesk_get_task_history',
+            args: {
+                taskid: parseInt(taskid, 10),
+            },
+        }])[0];
     };
 
     var openModal = function(data) {
@@ -42,8 +34,6 @@ define(['core/modal_factory', 'core/notification'], function(ModalFactory, Notif
         if (!container) {
             return;
         }
-        var endpoint = container.dataset.historyEndpoint;
-        var sesskey = container.dataset.sesskey;
 
         container.addEventListener('click', function(event) {
             var button = event.target.closest(SELECTOR_BUTTON);
@@ -57,7 +47,7 @@ define(['core/modal_factory', 'core/notification'], function(ModalFactory, Notif
                 return;
             }
 
-            fetchHistory(endpoint, {taskid: taskid, sesskey: sesskey})
+            fetchHistory(taskid)
                 .then(function(data) {
                     return openModal(data);
                 })

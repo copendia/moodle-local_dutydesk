@@ -420,8 +420,6 @@ if (!$ismodal) {
             $OUTPUT->render_from_template('local_dutydesk/task_list', [
                 'displaysearch' => false,
                 'tasks' => [$taskpreview],
-                'sesskey' => sesskey(),
-                'historyendpoint' => (new moodle_url('/local/dutydesk/task_history.php'))->out(false),
             ]),
             'local-dutydesk-task-edit-preview mt-4'
         );
