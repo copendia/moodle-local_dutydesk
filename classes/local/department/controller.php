@@ -186,7 +186,6 @@ class controller {
         $PAGE->set_heading(get_string('departments', 'local_dutydesk'));
         $PAGE->add_body_class('limitedwidth');
         $PAGE->add_body_class('local-dutydesk-hide-required-note');
-        $PAGE->requires->css('/local/dutydesk/styles.css');
         $PAGE->requires->js_call_amd('local_dutydesk/department_modal', 'initParent');
     }
 

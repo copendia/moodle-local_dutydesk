@@ -107,7 +107,6 @@ class controller {
         $PAGE->set_url(new moodle_url('/local/dutydesk/task_import.php'));
         $PAGE->set_title(get_string('taskimport', 'local_dutydesk'));
         $PAGE->set_heading(get_string('taskimport', 'local_dutydesk'));
-        $PAGE->requires->css('/local/dutydesk/styles.css');
         $PAGE->add_body_class('limitedwidth');
     }
 

@@ -110,7 +110,6 @@ $PAGE->set_title(get_string('subtasks', 'local_dutydesk'));
 $PAGE->set_heading(format_string($task->title));
 $PAGE->add_body_class('limitedwidth');
 $PAGE->set_pagelayout($ismodal ? 'embedded' : 'standard');
-$PAGE->requires->css('/local/dutydesk/styles.css');
 if ($ismodal) {
     $PAGE->requires->js_init_code(<<<'JS'
 (function() {
