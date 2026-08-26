@@ -86,6 +86,7 @@ class task_import_form extends \moodleform {
             [
                 'maxbytes' => $CFG->maxbytes,
                 'maxfiles' => 1,
+                'accepted_types' => ['.csv', '.xlsx'],
             ]
         );
         $mform->addRule('importfile', null, 'required', null, 'client');

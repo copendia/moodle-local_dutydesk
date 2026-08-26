@@ -190,6 +190,7 @@ $string['taskimportcheck'] = 'Import prüfen';
 $string['taskimportconfirm'] = 'Import abschließen';
 $string['taskimportempty'] = 'In der Datei wurden keine importierbaren Aufgaben gefunden.';
 $string['taskimportfile'] = 'Importdatei';
+$string['taskimportfiletoolarge'] = 'Die Importdatei ist zu groß. Bitte verwenden Sie eine Datei mit maximal 5000 Zeilen und 50 Spalten.';
 $string['taskimportinvalidfiletype'] = 'Bitte laden Sie eine Excel- oder CSV-Datei hoch.';
 $string['taskimportmanagedepartments'] = 'Dezernate verwalten';
 $string['taskimportmissingcolumns'] = 'Die Datei muss Spalten für Sachgebiet und Beschreibung enthalten.';

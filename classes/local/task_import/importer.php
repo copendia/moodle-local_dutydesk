@@ -21,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__DIR__, 3) . '/lib.php');
 
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
@@ -32,6 +33,12 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class importer {
+    /** Maximum spreadsheet rows accepted for one import. */
+    private const MAX_IMPORT_ROWS = 5000;
+
+    /** Maximum spreadsheet columns accepted for one import. */
+    private const MAX_IMPORT_COLUMNS = 50;
+
     /**
      * Return department options for the import form.
      *
@@ -121,6 +128,11 @@ class importer {
         }
         $spreadsheet = $reader->load($filepath);
         $sheet = $spreadsheet->getActiveSheet();
+        $highestrow = $sheet->getHighestDataRow();
+        $highestcolumn = Coordinate::columnIndexFromString($sheet->getHighestDataColumn());
+        if ($highestrow > self::MAX_IMPORT_ROWS || $highestcolumn > self::MAX_IMPORT_COLUMNS) {
+            throw new \moodle_exception('taskimportfiletoolarge', 'local_dutydesk');
+        }
 
         return $sheet->toArray(null, true, true, true);
     }

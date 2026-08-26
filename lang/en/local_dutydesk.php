@@ -190,6 +190,7 @@ $string['taskimportcheck'] = 'Check import';
 $string['taskimportconfirm'] = 'Complete import';
 $string['taskimportempty'] = 'No importable tasks were found in the file.';
 $string['taskimportfile'] = 'Import file';
+$string['taskimportfiletoolarge'] = 'The import file is too large. Please use a file with no more than 5000 rows and 50 columns.';
 $string['taskimportinvalidfiletype'] = 'Please upload an Excel or CSV file.';
 $string['taskimportmanagedepartments'] = 'Manage departments';
 $string['taskimportmissingcolumns'] = 'The file must contain columns for subject area and description.';
