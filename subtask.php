@@ -24,4 +24,6 @@
 
 require('../../config.php');
 
+require_login();
+
 \local_dutydesk\local\subtask\controller::execute();

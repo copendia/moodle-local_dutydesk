@@ -37,7 +37,7 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
 
     $dbman = $DB->get_manager();
 
-    $gettablename = static function(string $oldname, string $newname) use ($dbman): ?string {
+    $gettablename = static function (string $oldname, string $newname) use ($dbman): ?string {
         if ($dbman->table_exists(new xmldb_table($oldname))) {
             return $oldname;
         }
@@ -47,7 +47,7 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
         return null;
     };
 
-    $gettable = static function(string $oldname, string $newname) use ($gettablename): ?xmldb_table {
+    $gettable = static function (string $oldname, string $newname) use ($gettablename): ?xmldb_table {
         $tablename = $gettablename($oldname, $newname);
         return $tablename === null ? null : new xmldb_table($tablename);
     };
