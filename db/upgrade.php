@@ -37,11 +37,26 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
 
     $dbman = $DB->get_manager();
 
+    $gettablename = static function (string $oldname, string $newname) use ($dbman): ?string {
+        if ($dbman->table_exists(new xmldb_table($oldname))) {
+            return $oldname;
+        }
+        if ($dbman->table_exists(new xmldb_table($newname))) {
+            return $newname;
+        }
+        return null;
+    };
+
+    $gettable = static function (string $oldname, string $newname) use ($gettablename): ?xmldb_table {
+        $tablename = $gettablename($oldname, $newname);
+        return $tablename === null ? null : new xmldb_table($tablename);
+    };
+
     if ($oldversion < 2026072801) {
-        $table = new xmldb_table('dutydesk_subtask');
+        $table = $gettable('dutydesk_subtask', 'local_dutydesk_subtask');
         $oldfield = new xmldb_field('order', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'title');
 
-        if ($dbman->table_exists($table) && $dbman->field_exists($table, $oldfield)) {
+        if ($table !== null && $dbman->field_exists($table, $oldfield)) {
             $dbman->rename_field($table, $oldfield, 'sortorder');
         }
 
@@ -49,20 +64,24 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
     }
 
     if ($oldversion < 2026072802) {
-        $table = new xmldb_table('dutydesk_task');
+        $tablename = $gettablename('dutydesk_task', 'local_dutydesk_task');
+        $table = $tablename === null ? null : new xmldb_table($tablename);
         $field = new xmldb_field('descriptionformat', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '1', 'description');
 
-        if ($dbman->table_exists($table) && !$dbman->field_exists($table, $field)) {
+        if ($table !== null && !$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        $DB->set_field('dutydesk_task', 'descriptionformat', FORMAT_HTML);
+        if ($tablename !== null) {
+            $DB->set_field($tablename, 'descriptionformat', FORMAT_HTML);
+        }
 
         upgrade_plugin_savepoint(true, 2026072802, 'local', 'dutydesk');
     }
 
     if ($oldversion < 2026072803) {
-        $table = new xmldb_table('dutydesk_subtask');
+        $tablename = $gettablename('dutydesk_subtask', 'local_dutydesk_subtask');
+        $table = $tablename === null ? null : new xmldb_table($tablename);
         $description = new xmldb_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null, 'title');
         $descriptionformat = new xmldb_field(
             'descriptionformat',
@@ -75,7 +94,7 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             'description'
         );
 
-        if ($dbman->table_exists($table)) {
+        if ($table !== null) {
             if (!$dbman->field_exists($table, $description)) {
                 $dbman->add_field($table, $description);
             }
@@ -84,29 +103,37 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             }
         }
 
-        $DB->set_field('dutydesk_subtask', 'descriptionformat', FORMAT_HTML);
+        if ($tablename !== null) {
+            $DB->set_field($tablename, 'descriptionformat', FORMAT_HTML);
+        }
 
         upgrade_plugin_savepoint(true, 2026072803, 'local', 'dutydesk');
     }
 
     if ($oldversion < 2026072804) {
-        $positiontable = new xmldb_table('dutydesk_position');
+        $positiontablename = $gettablename('dutydesk_position', 'local_dutydesk_position');
+        $positiontable = $positiontablename === null ? null : new xmldb_table($positiontablename);
         $descriptionfield = new xmldb_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null, 'departmentid');
-        if ($dbman->table_exists($positiontable) && !$dbman->field_exists($positiontable, $descriptionfield)) {
+        if ($positiontable !== null && !$dbman->field_exists($positiontable, $descriptionfield)) {
             $dbman->add_field($positiontable, $descriptionfield);
         }
 
         $primaryfield = new xmldb_field('primaryuserid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'description');
 
-        if ($dbman->table_exists($positiontable) && !$dbman->field_exists($positiontable, $primaryfield)) {
+        if ($positiontable !== null && !$dbman->field_exists($positiontable, $primaryfield)) {
             $dbman->add_field($positiontable, $primaryfield);
         }
 
-        $assignmenttable = new xmldb_table('dutydesk_taskassignment');
+        $assignmenttablename = $gettablename('dutydesk_taskassignment', 'local_dutydesk_taskassign');
+        $assignmenttable = $assignmenttablename === null ? null : new xmldb_table($assignmenttablename);
         $userfield = new xmldb_field('userid');
-        if ($dbman->table_exists($assignmenttable) && $dbman->field_exists($assignmenttable, $userfield)) {
+        if (
+            $assignmenttable !== null
+            && $positiontablename !== null
+            && $dbman->field_exists($assignmenttable, $userfield)
+        ) {
             $assignments = $DB->get_records_sql(
-                "SELECT positionid, userid FROM {dutydesk_taskassignment} WHERE userid IS NOT NULL"
+                "SELECT positionid, userid FROM {{$assignmenttablename}} WHERE userid IS NOT NULL"
             );
             $updatedpositions = [];
             if (!empty($assignments)) {
@@ -119,9 +146,9 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
                     if (isset($updatedpositions[$positionid])) {
                         continue;
                     }
-                    $existingprimary = $DB->get_field('dutydesk_position', 'primaryuserid', ['id' => $positionid]);
+                    $existingprimary = $DB->get_field($positiontablename, 'primaryuserid', ['id' => $positionid]);
                     if (empty($existingprimary)) {
-                        $DB->set_field('dutydesk_position', 'primaryuserid', $userid, ['id' => $positionid]);
+                        $DB->set_field($positiontablename, 'primaryuserid', $userid, ['id' => $positionid]);
                         $updatedpositions[$positionid] = true;
                     }
                 }
@@ -134,8 +161,9 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             $dbman->rename_table($olddeputytable, 'dutydesk_position_deputy');
         }
 
-        $deputytable = new xmldb_table('dutydesk_position_deputy');
-        if ($dbman->table_exists($deputytable)) {
+        $deputytablename = $gettablename('dutydesk_position_deputy', 'local_dutydesk_posdeputy');
+        $deputytable = $deputytablename === null ? null : new xmldb_table($deputytablename);
+        if ($deputytable !== null) {
             $taskfield = new xmldb_field('taskid');
             if ($dbman->field_exists($deputytable, $taskfield)) {
                 $dbman->drop_field($deputytable, $taskfield);
@@ -146,7 +174,7 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
                 $dbman->add_field($deputytable, $timecreated);
             }
 
-            $existingdeputies = $DB->get_records('dutydesk_position_deputy');
+            $existingdeputies = $DB->get_records($deputytablename);
             $seenpositions = [];
             $now = time();
             foreach ($existingdeputies as $deputy) {
@@ -154,19 +182,19 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
                 $userid = (int)($deputy->userid ?? 0);
 
                 if ($positionid <= 0 || $userid <= 0) {
-                    $DB->delete_records('dutydesk_position_deputy', ['id' => $deputy->id]);
+                    $DB->delete_records($deputytablename, ['id' => $deputy->id]);
                     continue;
                 }
 
                 if (isset($seenpositions[$positionid])) {
-                    $DB->delete_records('dutydesk_position_deputy', ['id' => $deputy->id]);
+                    $DB->delete_records($deputytablename, ['id' => $deputy->id]);
                     continue;
                 }
 
                 $seenpositions[$positionid] = true;
 
                 if (empty($deputy->timecreated)) {
-                    $DB->set_field('dutydesk_position_deputy', 'timecreated', $now, ['id' => $deputy->id]);
+                    $DB->set_field($deputytablename, 'timecreated', $now, ['id' => $deputy->id]);
                 }
             }
 
@@ -207,7 +235,8 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
     }
 
     if ($oldversion < 2026072807) {
-        $table = new xmldb_table('dutydesk_department_manager');
+        $table = $gettable('dutydesk_department_manager', 'local_dutydesk_deptmgr');
+        $table = $table ?? new xmldb_table('dutydesk_department_manager');
 
         if (!$dbman->table_exists($table)) {
             $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
@@ -226,7 +255,8 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
     }
 
     if ($oldversion < 2026072808) {
-        $table = new xmldb_table('dutydesk_task_history');
+        $table = $gettable('dutydesk_task_history', 'local_dutydesk_taskhist');
+        $table = $table ?? new xmldb_table('dutydesk_task_history');
 
         if (!$dbman->table_exists($table)) {
             $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
@@ -246,10 +276,10 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
     }
 
     if ($oldversion < 2026072809) {
-        $table = new xmldb_table('dutydesk_taskassignment');
+        $table = $gettable('dutydesk_taskassignment', 'local_dutydesk_taskassign');
         $field = new xmldb_field('workloadpercent', XMLDB_TYPE_INTEGER, '3', null, null, null, null, 'positionid');
 
-        if ($dbman->table_exists($table) && !$dbman->field_exists($table, $field)) {
+        if ($table !== null && !$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
@@ -261,19 +291,22 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
     }
 
     if ($oldversion < 2026072811) {
-        $table = new xmldb_table('dutydesk_position');
+        $tablename = $gettablename('dutydesk_position', 'local_dutydesk_position');
+        $table = $tablename === null ? null : new xmldb_table($tablename);
         $field = new xmldb_field('archivedtime', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'archived');
 
-        if ($dbman->table_exists($table) && !$dbman->field_exists($table, $field)) {
+        if ($table !== null && !$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        $DB->execute(
-            "UPDATE {dutydesk_position}
-                SET archivedtime = timestamp
-              WHERE archived = 1
-                AND (archivedtime IS NULL OR archivedtime = 0)"
-        );
+        if ($tablename !== null) {
+            $DB->execute(
+                "UPDATE {{$tablename}}
+                    SET archivedtime = timestamp
+                  WHERE archived = 1
+                    AND (archivedtime IS NULL OR archivedtime = 0)"
+            );
+        }
 
         upgrade_plugin_savepoint(true, 2026072811, 'local', 'dutydesk');
     }
@@ -284,10 +317,10 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
     }
 
     if ($oldversion < 2026072813) {
-        $table = new xmldb_table('dutydesk_position');
+        $table = $gettable('dutydesk_position', 'local_dutydesk_position');
         $field = new xmldb_field('isvacant', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'archivedtime');
 
-        if ($dbman->table_exists($table) && !$dbman->field_exists($table, $field)) {
+        if ($table !== null && !$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
@@ -295,7 +328,7 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
     }
 
     if ($oldversion < 2026072814) {
-        $table = new xmldb_table('dutydesk_position');
+        $table = $gettable('dutydesk_position', 'local_dutydesk_position');
         $field = new xmldb_field(
             'positiontype',
             XMLDB_TYPE_CHAR,
@@ -307,7 +340,7 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
             'title'
         );
 
-        if ($dbman->table_exists($table) && !$dbman->field_exists($table, $field)) {
+        if ($table !== null && !$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
@@ -315,10 +348,10 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
     }
 
     if ($oldversion < 2026072815) {
-        $table = new xmldb_table('dutydesk_category');
+        $table = $gettable('dutydesk_category', 'local_dutydesk_category');
         $field = new xmldb_field('departmentid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'name');
 
-        if ($dbman->table_exists($table) && !$dbman->field_exists($table, $field)) {
+        if ($table !== null && !$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
@@ -328,8 +361,13 @@ function xmldb_local_dutydesk_upgrade(int $oldversion): bool {
     if ($oldversion < 2026072816) {
         $olddeputytable = new xmldb_table('dutydesk_position_deputyassigment');
         $newdeputytable = new xmldb_table('dutydesk_position_deputy');
+        $currentdeputytable = new xmldb_table('local_dutydesk_posdeputy');
 
-        if ($dbman->table_exists($olddeputytable) && !$dbman->table_exists($newdeputytable)) {
+        if (
+            $dbman->table_exists($olddeputytable)
+            && !$dbman->table_exists($newdeputytable)
+            && !$dbman->table_exists($currentdeputytable)
+        ) {
             $dbman->rename_table($olddeputytable, 'dutydesk_position_deputy');
         }
 
