@@ -18,7 +18,7 @@ services:
       MOODLE_ADMIN_PASS: Admin123!
       MOODLE_ADMIN_EMAIL: admin@example.test
     ports:
-      - "8085:80"
+      - "127.0.0.1:8085:80"
     volumes:
       - moodledata:/var/www/moodledata
 
