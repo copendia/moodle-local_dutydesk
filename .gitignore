@@ -59,6 +59,7 @@ moodle-plugin-ci.phar
 jsconfig.json
 *.sql
 *.zip
+image.png
 *.pfx
 /dataroot
 /backup
